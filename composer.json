@@ -1,0 +1,22 @@
+{
+    "name": "jackiedo/dotenv-editor",
+    "description": "The .env file editor tool for Laravel 5+",
+    "license": "MIT",
+    "keywords": ["laravel", "dotenv", "dotenv-editor"],
+    "authors": [
+        {
+            "name": "Jackie Do",
+            "email": "anhvudo@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.9",
+        "illuminate/support": "5.1.*|5.2.*|5.3.*|5.4.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Jackiedo\\DotenvEditor\\": "src/Jackiedo/DotenvEditor"
+        }
+    },
+    "minimum-stability": "stable"
+}
