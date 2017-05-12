@@ -85,12 +85,13 @@ class DotenvEditor
 		$this->reader    = new DotenvReader($this->formatter);
 		$this->writer    = new DotenvWriter($this->formatter);
 
-    	$backupPath = config('dotenv-editor.backupPath', base_path('resources/backups/dotenv-editor/'));
+    	$backupPath = $this->app['config']->get('dotenv-editor.backupPath', base_path('storage/dotenv-editor/backups/'));
         if(!is_dir($backupPath)){
             mkdir($backupPath, 0777, true);
+            copy(__DIR__ . '/../../stubs/gitignore.txt', $backupPath . '../.gitignore');
         }
         $this->backupPath = $backupPath;
-        $this->autoBackup = config('dotenv-editor.autoBackup', true);
+        $this->autoBackup = $this->app['config']->get('dotenv-editor.autoBackup', true);
     }
 
 	/**

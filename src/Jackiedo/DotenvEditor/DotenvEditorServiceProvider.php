@@ -1,6 +1,7 @@
 <?php namespace Jackiedo\DotenvEditor;
 
 use Illuminate\Support\ServiceProvider;
+use Jackiedo\DotenvEditor\Console\DotenvSetKeyCommand;
 
 /**
  * DotenvEditorServiceProvider
@@ -52,6 +53,13 @@ class DotenvEditorServiceProvider extends ServiceProvider {
 			$formatter = new DotenvFormatter;
 			return new DotenvEditor($app, $formatter);
 		});
+
+		$this->app->singleton('command.dotenv', function($app)
+		{
+			return new DotenvSetKeyCommand($app['dotenv-editor']);
+		});
+
+		$this->commands('command.dotenv');
 	}
 
 	/**
@@ -61,7 +69,7 @@ class DotenvEditorServiceProvider extends ServiceProvider {
 	 */
 	public function provides()
 	{
-		return ['dotenv-editor'];
+		return ['dotenv-editor', 'command.dotenv'];
 	}
 
 }
