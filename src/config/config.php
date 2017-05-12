@@ -3,6 +3,6 @@
 return array(
 
 	'autoBackup' => true,
-	'backupPath' => base_path('resources/backups/dotenv-editor/')
+	'backupPath' => base_path('storage/dotenv-editor/backups/')
 
 );
