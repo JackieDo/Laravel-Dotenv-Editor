@@ -5,7 +5,7 @@ use Jackiedo\DotenvEditor\Contracts\DotenvReader as DotenvReaderContract;
 use Jackiedo\DotenvEditor\Exceptions\UnableReadFileException;
 
 /**
- * The .env reader.
+ * The DotenvReader class.
  *
  * @package Jackiedo\DotenvEditor
  * @author Jackie Do <anhvudo@gmail.com>
@@ -30,18 +30,13 @@ class DotenvReader implements DotenvReaderContract
      * Create a new reader instance
      *
      * @param \Jackiedo\DotenvEditor\Contracts\DotenvFormatter $formatter
-     * @param string|null                                      $filePath
      */
-    public function __construct(DotenvFormatterContract $formatter, $filePath = null) {
+    public function __construct(DotenvFormatterContract $formatter) {
     	$this->formatter = $formatter;
-
-        if (!is_null($filePath)) {
-            $this->load($filePath);
-        }
     }
 
     /**
-     * Load .env file
+     * Load file
      *
      * @param  string $filePath
      *
@@ -53,7 +48,7 @@ class DotenvReader implements DotenvReaderContract
     }
 
     /**
-     * Ensures the given filePath is readable.
+     * Ensures the given file is readable.
      *
      * @throws \Jackiedo\DotenvEditor\Exceptions\UnableReadFileException
      *
@@ -66,7 +61,7 @@ class DotenvReader implements DotenvReaderContract
     }
 
     /**
-     * Get content of .env file
+     * Get content of file
      *
      * @return string
      */
@@ -77,7 +72,7 @@ class DotenvReader implements DotenvReaderContract
     }
 
     /**
-     * Get all lines informations from content of .env file
+     * Get informations of all lines from file content
      *
      * @return array
      */
@@ -99,7 +94,7 @@ class DotenvReader implements DotenvReaderContract
     }
 
     /**
-     * Get all key informations in .env file
+     * Get informations of all keys from file content
      *
      * @return array
      */

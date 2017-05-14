@@ -4,7 +4,7 @@ use Illuminate\Console\Command;
 use Illuminate\Console\ConfirmableTrait;
 use Jackiedo\DotenvEditor\DotenvEditor;
 
-class DotenvSetKeyCommand extends Command
+class DotenvRestoreCommand extends Command
 {
     use ConfirmableTrait;
 
@@ -13,14 +13,9 @@ class DotenvSetKeyCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'dotenv:set-key
-                            {key             : Key name will be added or updated}
-                            {value?          : Value want to set for this key}
-                            {comment?        : Comment want to set for this key. Type "false" to clear comment for exists key}
-                            {--filepath=     : The file path should use to load for working. Do not use if you want to load file .env at root application folder}
-                            {--r|restore     : Restore the loaded file from backup or special file if the loaded file is not found}
-                            {--restore-path= : The special file path should use to restore from. Do not use if you want to restore from latest backup file}
-                            {--e|export-key  : Leading before key name with "export " command}
+    protected $signature = 'dotenv:restore
+                            {--filepath=     : The .env file path will be restored. Do not use if you want to restore file .env at root application folder}
+                            {--restore-path= : The special file path should use to restore. Do not use if you want to restore from latest backup file}
                             {--force         : Force the operation to run when in production}';
 
     /**
@@ -28,7 +23,7 @@ class DotenvSetKeyCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Add new or update one setter into the .env file';
+    protected $description = 'Restore the .env file from backup or special file';
 
     /**
      * The .env file editor instance
@@ -45,46 +40,11 @@ class DotenvSetKeyCommand extends Command
     protected $filePath = null;
 
     /**
-     * Determine restoring the .env file if not exists
-     *
-     * @var boolean
-     */
-    protected $forceRestore = false;
-
-    /**
      * The file path should use to restore
      *
      * @var string|null
      */
     protected $retorePath = null;
-
-    /**
-     * The key name use to add or update
-     *
-     * @var string
-     */
-    protected $key = 'NEW_ENV_KEY';
-
-    /**
-     * Value of key
-     *
-     * @var mixed
-     */
-    protected $value = null;
-
-    /**
-     * Comment for key
-     *
-     * @var mixed
-     */
-    protected $comment = null;
-
-    /**
-     * Determine leading the key with 'export '
-     *
-     * @var boolean
-     */
-    protected $exportKey = false;
 
     /**
      * Create a new command instance.
@@ -111,13 +71,11 @@ class DotenvSetKeyCommand extends Command
             return false;
         }
 
-        $this->line('Setting key in your file...');
+        $this->line('Restoring your file...');
 
-        $this->editor->load($this->filePath, $this->forceRestore, $this->restorePath);
-        $this->editor->setKey($this->key, $this->value, $this->comment, $this->exportKey);
-        $this->editor->save();
+        $this->editor->load($this->filePath)->restore($this->restorePath);
 
-        $this->info("The key [{$this->key}] is setted successfully with value [{$this->value}].");
+        $this->info("Your file is restored successfully");
     }
 
     /**
@@ -129,15 +87,8 @@ class DotenvSetKeyCommand extends Command
         $filePath       = $this->stringToType($this->option('filepath'));
         $this->filePath = (is_string($filePath)) ? base_path($filePath) : null;
 
-        $this->forceRestore = $this->option('restore');
-
         $restorePath       = $this->stringToType($this->option('restore-path'));
         $this->restorePath = (is_string($restorePath)) ? base_path($restorePath) : null;
-
-        $this->key       = $this->argument('key');
-        $this->value     = $this->stringToType($this->argument('value'));
-        $this->comment   = $this->stringToType($this->argument('comment'));
-        $this->exportKey = $this->option('export-key');
     }
 
     /**
