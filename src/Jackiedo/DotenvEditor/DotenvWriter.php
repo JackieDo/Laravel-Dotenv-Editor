@@ -5,7 +5,7 @@ use Jackiedo\DotenvEditor\Contracts\DotenvWriter as DotenvWriterContract;
 use Jackiedo\DotenvEditor\Exceptions\UnableWriteToFileException;
 
 /**
- * The .env writer.
+ * The DotenvWriter writer.
  *
  * @package Jackiedo\DotenvEditor
  * @author Jackie Do <anhvudo@gmail.com>
@@ -30,18 +30,13 @@ class DotenvWriter implements DotenvWriterContract
 	 * Create a new writer instance
 	 *
 	 * @param Jackiedo\DotenvEditor\Contracts\DotenvFormatter	$formatter
-	 * @param string|null										$content
 	 */
-	public function __construct(DotenvFormatterContract $formatter, $content = null) {
+	public function __construct(DotenvFormatterContract $formatter) {
 		$this->formatter = $formatter;
-
-		if (!is_null($content)) {
-	        $this->setBuffer($content);
-	    }
 	}
 
 	/**
-	 * Tests the .env file for writability. If the file doesn't exist, check
+	 * Tests file for writability. If the file doesn't exist, check
 	 * the parent directory for writability so the file can be created.
 	 *
 	 * @throws \Jackiedo\DotenvEditor\Exceptions\UnableWriteToFileException
@@ -55,7 +50,7 @@ class DotenvWriter implements DotenvWriterContract
 	}
 
 	/**
-	 * Load current content into buffer
+	 * Set buffer with content
 	 *
 	 * @param  string $content
 	 *

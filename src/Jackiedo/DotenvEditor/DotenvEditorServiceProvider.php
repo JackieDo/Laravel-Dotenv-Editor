@@ -1,6 +1,11 @@
 <?php namespace Jackiedo\DotenvEditor;
 
 use Illuminate\Support\ServiceProvider;
+use Jackiedo\DotenvEditor\Console\DotenvBackupCommand;
+use Jackiedo\DotenvEditor\Console\DotenvDeleteKeyCommand;
+use Jackiedo\DotenvEditor\Console\DotenvGetBackupsCommand;
+use Jackiedo\DotenvEditor\Console\DotenvGetKeysCommand;
+use Jackiedo\DotenvEditor\Console\DotenvRestoreCommand;
 use Jackiedo\DotenvEditor\Console\DotenvSetKeyCommand;
 
 /**
@@ -54,12 +59,51 @@ class DotenvEditorServiceProvider extends ServiceProvider {
 			return new DotenvEditor($app, $formatter);
 		});
 
-		$this->app->singleton('command.dotenv', function($app)
+		$this->registerCommands();
+	}
+
+	/**
+	 * Register commands
+	 *
+	 * @return void
+	 */
+	protected function registerCommands() {
+		$this->app->singleton('command.dotenv.backup', function($app)
+		{
+			return new DotenvBackupCommand($app['dotenv-editor']);
+		});
+
+		$this->app->singleton('command.dotenv.deletekey', function($app)
+		{
+			return new DotenvDeleteKeyCommand($app['dotenv-editor']);
+		});
+
+		$this->app->singleton('command.dotenv.getbackups', function($app)
+		{
+			return new DotenvGetBackupsCommand($app['dotenv-editor']);
+		});
+
+		$this->app->singleton('command.dotenv.getkeys', function($app)
+		{
+			return new DotenvGetKeysCommand($app['dotenv-editor']);
+		});
+
+		$this->app->singleton('command.dotenv.restore', function($app)
+		{
+			return new DotenvRestoreCommand($app['dotenv-editor']);
+		});
+
+		$this->app->singleton('command.dotenv.setkey', function($app)
 		{
 			return new DotenvSetKeyCommand($app['dotenv-editor']);
 		});
 
-		$this->commands('command.dotenv');
+		$this->commands('command.dotenv.backup');
+		$this->commands('command.dotenv.deletekey');
+		$this->commands('command.dotenv.getbackups');
+		$this->commands('command.dotenv.getkeys');
+		$this->commands('command.dotenv.restore');
+		$this->commands('command.dotenv.setkey');
 	}
 
 	/**
@@ -69,7 +113,15 @@ class DotenvEditorServiceProvider extends ServiceProvider {
 	 */
 	public function provides()
 	{
-		return ['dotenv-editor', 'command.dotenv'];
+		return [
+			'dotenv-editor',
+			'command.dotenv.backup',
+			'command.dotenv.deletekey',
+			'command.dotenv.getbackups',
+			'command.dotenv.getkeys',
+			'command.dotenv.restore',
+			'command.dotenv.setkey'
+		];
 	}
 
 }

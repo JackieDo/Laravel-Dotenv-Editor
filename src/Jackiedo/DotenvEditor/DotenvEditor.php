@@ -43,7 +43,7 @@ class DotenvEditor
     protected $writer;
 
     /**
-     * The .env file path
+     * The file path
      *
      * @var string
      */
@@ -57,7 +57,7 @@ class DotenvEditor
     protected $autoBackup;
 
     /**
-     * The .env file backup path
+     * The backup path
      *
      * @var string
      */
@@ -69,7 +69,7 @@ class DotenvEditor
     const BACKUP_FILENAME_PREFIX = '.env.backup_';
 
     /**
-     * The backup filename suffix, include file extension
+     * The backup filename suffix
      */
     const BACKUP_FILENAME_SUFFIX = '';
 
@@ -90,42 +90,54 @@ class DotenvEditor
             mkdir($backupPath, 0777, true);
             copy(__DIR__ . '/../../stubs/gitignore.txt', $backupPath . '../.gitignore');
         }
+
         $this->backupPath = $backupPath;
         $this->autoBackup = $this->app['config']->get('dotenv-editor.autoBackup', true);
+
+        $this->load();
     }
 
 	/**
-	 * Load the .env file
+	 * Load file for working
 	 *
-	 * @param  string|null	$filepath		The .env file path
-	 * @param  boolean		$forceRestore	Restore the .env file from other file if not exists
-	 * @param  string|null	$restorePath	The file path you want to restore from
-	 *
-	 * @throws \Jackiedo\DotenvEditor\Exceptions\FileNotFoundException
+	 * @param  string|null	$filePath              The file path
+	 * @param  boolean		$restoreIfNotFound     Restore this file from other file if it's not found
+	 * @param  string|null	$restorePath           The file path you want to restore from
 	 *
 	 * @return DotenvEditor
 	 */
-	public function load($filepath = null, $forceRestore = false, $restorePath = null) {
-		$this->filePath = is_null($filepath) ? $this->app->environmentFilePath() : $filepath;
-		$this->loadReader($this->filePath);
+	public function load($filePath = null, $restoreIfNotFound = false, $restorePath = null) {
+		$this->resetContent();
 
-		if (file_exists($this->filePath)) {
-			$this->setBuffer($this->getContent());
-			return $this;
-		} else {
-			if (!$forceRestore) {
-				throw new FileNotFoundException("File does not exist at path {$this->filePath}");
-			}
-			return $this->restore($restorePath);
-		}
+        $this->filePath = is_null($filePath) ? $this->app->environmentFilePath() : $filePath;
+		$this->reader->load($this->filePath);
+
+        if (file_exists($this->filePath)) {
+            $this->writer->setBuffer($this->getContent());
+            return $this;
+        } elseif ($restoreIfNotFound) {
+            return $this->restore($restorePath);
+        } else {
+            return $this;
+        }
 	}
+
+    /**
+     * Reset content for editor
+     *
+     * @return void;
+     */
+    protected function resetContent() {
+        $this->filePath = null;
+        $this->reader->load(null);
+        $this->writer->setBuffer(null);
+    }
 
 	/*
     |--------------------------------------------------------------------------
     | Working with reading
     |--------------------------------------------------------------------------
     |
-    | loadReader($filepath)
     | getContent($content)
     | getLines()
     | getKeys()
@@ -135,19 +147,7 @@ class DotenvEditor
     */
 
 	/**
-	 * Load the .env file into reader
-	 *
-	 * @param  string $filepath
-	 *
-	 * @return DotenvEditor
-	 */
-	protected function loadReader($filepath) {
-		$this->reader->load($filepath);
-		return $this;
-	}
-
-	/**
-	 * Get raw content of .env file
+	 * Get raw content of file
 	 *
 	 * @return string
 	 */
@@ -156,7 +156,7 @@ class DotenvEditor
 	}
 
 	/**
-	 * Get all lines from .env file
+	 * Get all lines from file
 	 *
 	 * @return array
 	 */
@@ -165,7 +165,7 @@ class DotenvEditor
 	}
 
 	/**
-	 * Get all or exists given keys in .env file
+	 * Get all or exists given keys in file content
 	 *
 	 * @param  array  $keys
 	 *
@@ -183,7 +183,7 @@ class DotenvEditor
 	}
 
 	/**
-	 * Checks, if a given key exists in your .env file.
+	 * Check, if a given key is exists in the file content
 	 *
 	 * @param  string  $keys
 	 *
@@ -198,7 +198,7 @@ class DotenvEditor
 	}
 
     /**
-     * Returns the value matching to a given key.
+     * Return the value matching to a given key in the file content
      *
      * @param $key
      *
@@ -220,7 +220,6 @@ class DotenvEditor
     |--------------------------------------------------------------------------
     |
     | getBuffer()
-    | setBuffer($content)
     | addEmpty()
     | addComment($comment)
     | setKeys($data)
@@ -232,7 +231,7 @@ class DotenvEditor
     */
 
 	/**
-	 * Return content in buffer of the .env file content
+	 * Return content in buffer
 	 *
 	 * @return string
 	 */
@@ -241,29 +240,17 @@ class DotenvEditor
 	}
 
 	/**
-	 * Replace buffer of the .env file content with special content
-	 *
-	 * @param string $content
-	 *
-	 * @return DotenvEditor
-	 */
-	public function setBuffer($content) {
-		$this->writer->setBuffer($content);
-		return $this;
-	}
-
-	/**
-	 * Add empty line to buffer of the .env file content
+	 * Add empty line to buffer
 	 *
 	 * @return DotenvEditor
 	 */
 	public function addEmpty() {
-		$this->writer->appendEmptyLine();
+        $this->writer->appendEmptyLine();
 		return $this;
 	}
 
 	/**
-	 * Add comment line to buffer of the .env file content
+	 * Add comment line to buffer
 	 *
 	 * @param object
 	 */
@@ -273,7 +260,7 @@ class DotenvEditor
 	}
 
 	/**
-	 * Set many keys to buffer of the .env file
+	 * Set many keys to buffer
 	 *
 	 * @param array $data
 	 *
@@ -281,27 +268,27 @@ class DotenvEditor
 	 */
 	public function setKeys($data) {
 		foreach ($data as $setter) {
-			if (array_key_exists('key', $setter)) {
-				$key     = $this->formatter->formatKey($setter['key']);
-				$value   = array_key_exists('value', $setter) ? $setter['value'] : null;
-				$comment = array_key_exists('comment', $setter) ? $setter['comment'] : null;
-				$export  = array_key_exists('export', $setter) ? $setter['export'] : false;
+        	if (array_key_exists('key', $setter)) {
+        		$key     = $this->formatter->formatKey($setter['key']);
+        		$value   = array_key_exists('value', $setter) ? $setter['value'] : null;
+        		$comment = array_key_exists('comment', $setter) ? $setter['comment'] : null;
+        		$export  = array_key_exists('export', $setter) ? $setter['export'] : false;
 
-				if (!$this->keyExists($key)) {
-					$this->writer->appendSetter($key, $value, $comment, $export);
-				} else {
-					$oldInfo = $this->getKeys([$key]);
-					$comment = is_null($comment) ? $oldInfo[$key]['comment'] : $comment;
-					$this->writer->updateSetter($key, $value, $comment, $export);
-				}
-			}
-		}
+                if (!is_file($this->filePath) || !$this->keyExists($key)) {
+                    $this->writer->appendSetter($key, $value, $comment, $export);
+                } else {
+                    $oldInfo = $this->getKeys([$key]);
+                    $comment = is_null($comment) ? $oldInfo[$key]['comment'] : $comment;
+                    $this->writer->updateSetter($key, $value, $comment, $export);
+                }
+        	}
+        }
 
 		return $this;
 	}
 
 	/**
-	 * Set one key to buffer of the .env file content
+	 * Set one key to buffer
 	 *
 	 * @param string		$key
 	 * @param string|null	$value
@@ -317,7 +304,7 @@ class DotenvEditor
 	}
 
 	/**
-	 * Delete many keys in buffer of the .env file content
+	 * Delete many keys in buffer
 	 *
 	 * @param  array $keys
 	 *
@@ -332,7 +319,7 @@ class DotenvEditor
 	}
 
 	/**
-	 * Delete on key in buffer of the .env file content
+	 * Delete on key in buffer
 	 *
 	 * @param  string $key
 	 *
@@ -345,12 +332,12 @@ class DotenvEditor
 	}
 
     /**
-     * Save buffer of the .env file content to file
+     * Save buffer to file
      *
      * @return DotenvEditor
      */
     public function save() {
-    	if ($this->autoBackup) {
+    	if (is_file($this->filePath) && $this->autoBackup) {
     		$this->backup();
     	}
 
@@ -367,9 +354,9 @@ class DotenvEditor
     | backup()
     | getBackups()
     | getLatestBackup()
-    | restore($filepath = null)
-    | deleteBackups($filepaths = [])
-    | deleteBackup($filepath)
+    | restore($filePath = null)
+    | deleteBackups($filePaths = [])
+    | deleteBackup($filePath)
     |
     */
 
@@ -386,11 +373,16 @@ class DotenvEditor
     }
 
     /**
-     * Create one backup of the current .env file
+     * Create one backup of loaded file
      *
      * @return DotenvEditor
      */
     public function backup() {
+        if (!is_file($this->filePath)) {
+            throw new FileNotFoundException("File does not exist at path {$this->filePath}");
+            return false;
+        }
+
         copy(
             $this->filePath,
             $this->backupPath . self::BACKUP_FILENAME_PREFIX . date('Y_m_d_His') . self::BACKUP_FILENAME_SUFFIX
@@ -400,7 +392,7 @@ class DotenvEditor
     }
 
     /**
-     * Return an array with all available backups.
+     * Return an array with all available backups
      *
      * @return array
      */
@@ -429,7 +421,7 @@ class DotenvEditor
     }
 
     /**
-     * Return the filepath of the latest backup.
+     * Return the information of the latest backup file
      *
      * @return array
      */
@@ -449,13 +441,13 @@ class DotenvEditor
             }
         }
 
-		$filename  = self::BACKUP_FILENAME_PREFIX . date("Y_m_d_His", $latestBackup) . self::BACKUP_FILENAME_SUFFIX;
-		$filepath  = $this->backupPath . $filename;
+		$fileName  = self::BACKUP_FILENAME_PREFIX . date("Y_m_d_His", $latestBackup) . self::BACKUP_FILENAME_SUFFIX;
+		$filePath  = $this->backupPath . $fileName;
 		$createdAt = date("Y-m-d H:i:s", $latestBackup);
 
         $output = [
-			'filename'   => $filename,
-			'filepath'   => $filepath,
+			'filename'   => $fileName,
+			'filepath'   => $filePath,
 			'created_at' => $createdAt
         ];
 
@@ -463,27 +455,27 @@ class DotenvEditor
     }
 
     /**
-     * Restores the latest backup or a backup with special filepath.
+     * Restore the loaded file from latest backup file or from special file.
      *
-     * @param string|null	$filepath
+     * @param string|null	$filePath
      *
      * @return DotenvEditor
      */
-    public function restore($filepath = null) {
-        if (is_null($filepath)) {
+    public function restore($filePath = null) {
+        if (is_null($filePath)) {
         	$latestBackup = $this->getLatestBackup();
         	if (is_null($latestBackup)) {
         		throw new NoBackupAvailableException("There are no available backups!");
         	}
-        	$filepath = $latestBackup['filepath'];
+        	$filePath = $latestBackup['filepath'];
         }
 
-    	if (!file_exists($filepath)) {
-    		throw new FileNotFoundException("File does not exist at path {$filepath}");
+    	if (!is_file($filePath)) {
+    		throw new FileNotFoundException("File does not exist at path {$filePath}");
     	}
 
-    	copy($filepath, $this->filePath);
-    	$this->setBuffer($this->getContent());
+    	copy($filePath, $this->filePath);
+    	$this->writer->setBuffer($this->getContent());
 
         return $this;
     }
@@ -491,34 +483,34 @@ class DotenvEditor
     /**
      * Delete all or the given backup files
      *
-     * @param array	$filepaths
+     * @param array	$filePaths
      *
      * @return DotenvEditor
      */
-    public function deleteBackups($filepaths = []) {
-    	if (empty($filepaths)) {
+    public function deleteBackups($filePaths = []) {
+    	if (empty($filePaths)) {
     		$allBackups = $this->getBackups();
     		foreach ($allBackups as $backup) {
-    			$filepaths[] = $backup['filepath'];
+    			$filePaths[] = $backup['filepath'];
     		}
     	}
 
-    	foreach ($filepaths as $filepath) {
-    		if(file_exists($filepath)){
-	            unlink($filepath);
+    	foreach ($filePaths as $filePath) {
+    		if(is_file($filePath)){
+	            unlink($filePath);
 	        }
     	}
     	return $this;
     }
 
     /**
-     * Delete the given backup-file
+     * Delete the given backup file
      *
-     * @param string	$filepath
+     * @param string	$filePath
      *
      * @return DotenvEditor
      */
-    public function deleteBackup($filepath) {
-        return $this->deleteBackups([$filepath]);
+    public function deleteBackup($filePath) {
+        return $this->deleteBackups([$filePath]);
     }
 }
