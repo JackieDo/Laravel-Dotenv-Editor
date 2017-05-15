@@ -34,7 +34,7 @@ Look at one of the following topics to learn more about Laravel Dotenv Editor
     - [Backing up and restoring file](#backing-up-and-restoring-file)
     - [Method chaining](#method-chaining)
     - [Working with Artisan CLI](#working-with-artisan-cli)
-* [Exceptions](#exceptions)
+    - [Exceptions](#exceptions)
 * [License](#license)
 
 ## Versions and compatibility
@@ -159,7 +159,7 @@ Use method `getValue($key)`. Example:
 
     $value = DotenvEditor::getValue('APP_URL');
 
-## Writing content into file
+#### Writing content into file
 
 To edit file content, you have two job:
 - First is writing content into buffer
@@ -220,7 +220,7 @@ Use method `deleteKeys($keys)`. Example:
 
     $file = DotenvEditor::save();
 
-## Backing up and restoring file
+#### Backing up and restoring file
 
 ###### Backup your file
 
@@ -257,13 +257,13 @@ Use method `deleteKeys($keys)`. Example:
     $file = DotenvEditor::autoBackup(true); // Enable auto backup
     $file = DotenvEditor::autoBackup(false); // Disable auto backup
 
-## Method chaining
+#### Method chaining
 Some functions of loading, writing, backing up, restoring are implementation and usage of method chaining. So these functions can called to be chained together in a single statement. Example:
 
     $file = DotenvEditor::load('.env.example')->backup()->setKey('APP_URL', 'http://example.com')->save();
     return $file->getKeys();
 
-## Working with Artisan CLI
+#### Working with Artisan CLI
 Now, Laravel Dotenv Editor have total 6 commands can use easily with Artisan CLI. Such as:
 - php artisan dotenv:backup
 - php artisan dotenv:get-backups
@@ -278,7 +278,7 @@ Please use each above command with option --help for details of usage. Example:
 $ php artisan dotenv:get-backups --help
 ```
 
-## Exceptions
+#### Exceptions
 
 ## License
 [MIT](LICENSE) © Jackie Do
