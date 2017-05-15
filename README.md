@@ -258,7 +258,7 @@ Use method `deleteKeys($keys)`. Example:
     $file = DotenvEditor::autoBackup(false); // Disable auto backup
 
 #### Method chaining
-Some functions of loading, writing, backing up, restoring are implementation and usage of method chaining. So these functions can called to be chained together in a single statement. Example:
+Some functions of loading, writing, backing up, restoring are implementation and usage of method chaining. So these functions can be called to chained together in a single statement. Example:
 
     $file = DotenvEditor::load('.env.example')->backup()->setKey('APP_URL', 'http://example.com')->save();
     return $file->getKeys();
