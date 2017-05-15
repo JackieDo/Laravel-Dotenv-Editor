@@ -3,7 +3,7 @@
 use Exception;
 
 /**
- * This is the value not availabel exception class.
+ * This is unable write to file exception class.
  */
 class UnableWriteToFileException extends Exception
 {

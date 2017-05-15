@@ -3,7 +3,7 @@
 use Exception;
 
 /**
- * This is the invalid value exception class.
+ * This is invalid value exception class.
  */
 class InvalidValueException extends Exception
 {

@@ -31,8 +31,9 @@ class DotenvReader implements DotenvReaderContract
      *
      * @param \Jackiedo\DotenvEditor\Contracts\DotenvFormatter $formatter
      */
-    public function __construct(DotenvFormatterContract $formatter) {
-    	$this->formatter = $formatter;
+    public function __construct(DotenvFormatterContract $formatter)
+    {
+        $this->formatter = $formatter;
     }
 
     /**
@@ -42,7 +43,8 @@ class DotenvReader implements DotenvReaderContract
      *
      * @return DotenvReader
      */
-    public function load($filePath) {
+    public function load($filePath)
+    {
         $this->filePath = $filePath;
         return $this;
     }
@@ -54,7 +56,8 @@ class DotenvReader implements DotenvReaderContract
      *
      * @return void
      */
-    protected function ensureFileIsReadable() {
+    protected function ensureFileIsReadable()
+    {
         if (!is_readable($this->filePath) || !is_file($this->filePath)) {
             throw new UnableReadFileException(sprintf('Unable to read the file at %s.', $this->filePath));
         }
@@ -65,7 +68,8 @@ class DotenvReader implements DotenvReaderContract
      *
      * @return string
      */
-    public function content() {
+    public function content()
+    {
         $this->ensureFileIsReadable();
 
         return file_get_contents($this->filePath);
@@ -76,11 +80,12 @@ class DotenvReader implements DotenvReaderContract
      *
      * @return array
      */
-    public function lines() {
+    public function lines()
+    {
         $content = [];
         $lines   = $this->readLinesFromFile();
 
-        foreach($lines as $row => $line){
+        foreach ($lines as $row => $line) {
             $data = [
                 'line'        => $row+1,
                 'raw_data'    => $line,
@@ -98,11 +103,12 @@ class DotenvReader implements DotenvReaderContract
      *
      * @return array
      */
-    public function keys() {
+    public function keys()
+    {
         $content = [];
         $lines   = $this->readLinesFromFile();
 
-    	foreach($lines as $row => $line){
+        foreach ($lines as $row => $line) {
             $data = $this->formatter->parseLine($line);
             if ($data['type'] == 'setter') {
                 $content[$data['key']] = [
@@ -112,9 +118,9 @@ class DotenvReader implements DotenvReaderContract
                     'comment' => $data['comment']
                 ];
             }
-    	}
+        }
 
-    	return $content;
+        return $content;
     }
 
     /**
@@ -122,7 +128,8 @@ class DotenvReader implements DotenvReaderContract
      *
      * @return array
      */
-    protected function readLinesFromFile() {
+    protected function readLinesFromFile()
+    {
         $this->ensureFileIsReadable();
 
         $autodetect = ini_get('auto_detect_line_endings');

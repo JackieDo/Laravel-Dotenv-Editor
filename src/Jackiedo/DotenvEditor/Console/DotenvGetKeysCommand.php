@@ -88,7 +88,8 @@ class DotenvGetKeysCommand extends Command
      *
      * @return mixed
      */
-    protected function stringToType($string) {
+    protected function stringToType($string)
+    {
         if (is_string($string)) {
             switch (true) {
                 case ($string == 'null' || $string == 'NULL'):

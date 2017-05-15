@@ -2,7 +2,7 @@
 
 interface DotenvWriter
 {
-	/**
+    /**
      * Load current content into buffer
      *
      * @param  string $content
@@ -14,51 +14,51 @@ interface DotenvWriter
      */
     public function getBuffer();
 
-	/**
-	 * Append empty line to buffer
-	 */
-	public function appendEmptyLine();
+    /**
+     * Append empty line to buffer
+     */
+    public function appendEmptyLine();
 
-	/**
-	 * Append comment line to buffer
-	 *
-	 * @param  string $comment
-	 */
-	public function appendCommentLine($comment);
+    /**
+     * Append comment line to buffer
+     *
+     * @param  string $comment
+     */
+    public function appendCommentLine($comment);
 
-	/**
-	 * Append one setter to buffer
-	 *
-	 * @param  string		$key
-	 * @param  string|null	$value
-	 * @param  string|null	$comment
-	 * @param  boolean		$export
-	 */
-	public function appendSetter($key, $value = null, $comment = null, $export = false);
+    /**
+     * Append one setter to buffer
+     *
+     * @param  string		$key
+     * @param  string|null	$value
+     * @param  string|null	$comment
+     * @param  boolean		$export
+     */
+    public function appendSetter($key, $value = null, $comment = null, $export = false);
 
-	/**
-	 * Update one setter in buffer
-	 *
-	 * @param  string		$key
-	 * @param  string|null	$value
-	 * @param  string|null	$comment
-	 * @param  boolean		$export
-	 */
-	public function updateSetter($key, $value = null, $comment = null, $export = false);
+    /**
+     * Update one setter in buffer
+     *
+     * @param  string		$key
+     * @param  string|null	$value
+     * @param  string|null	$comment
+     * @param  boolean		$export
+     */
+    public function updateSetter($key, $value = null, $comment = null, $export = false);
 
-	/**
-	 * Delete one setter in buffer
-	 *
-	 * @param  string $key
-	 *
-	 * @return object
-	 */
-	public function deleteSetter($key);
+    /**
+     * Delete one setter in buffer
+     *
+     * @param  string $key
+     *
+     * @return object
+     */
+    public function deleteSetter($key);
 
-	/**
-	 * Save buffer to special file path
-	 *
-	 * @param  string $filePath
-	 */
-	public function save($filePath);
+    /**
+     * Save buffer to special file path
+     *
+     * @param  string $filePath
+     */
+    public function save($filePath);
 }

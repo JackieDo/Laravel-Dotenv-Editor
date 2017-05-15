@@ -3,7 +3,7 @@
 use Exception;
 
 /**
- * This is the value not availabel exception class.
+ * This is unable read file exception class.
  */
 class UnableReadFileException extends Exception
 {
