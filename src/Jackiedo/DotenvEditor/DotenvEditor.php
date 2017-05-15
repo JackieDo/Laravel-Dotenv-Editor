@@ -109,7 +109,7 @@ class DotenvEditor
 	public function load($filePath = null, $restoreIfNotFound = false, $restorePath = null) {
 		$this->resetContent();
 
-        $this->filePath = is_null($filePath) ? $this->app->environmentFilePath() : $filePath;
+        $this->filePath = is_null($filePath) ? $this->app->environmentPath().'/'.$this->app->environmentFile() : $filePath;
 		$this->reader->load($this->filePath);
 
         if (file_exists($this->filePath)) {

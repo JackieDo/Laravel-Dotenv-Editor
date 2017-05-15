@@ -78,7 +78,7 @@ class DotenvGetKeysCommand extends Command
         $this->line('');
         $this->table($headers, $output);
         $this->line('');
-        $this->info("You have total {$total} key in your file");
+        $this->info("You have total {$total} keys in your file");
     }
 
     /**
