@@ -125,7 +125,8 @@ class DotenvSetKeyCommand extends Command
      *
      * @return void
      */
-    protected function transferInputsToProperties() {
+    protected function transferInputsToProperties()
+    {
         $filePath       = $this->stringToType($this->option('filepath'));
         $this->filePath = (is_string($filePath)) ? base_path($filePath) : null;
 
@@ -147,7 +148,8 @@ class DotenvSetKeyCommand extends Command
      *
      * @return mixed
      */
-    protected function stringToType($string) {
+    protected function stringToType($string)
+    {
         if (is_string($string)) {
             switch (true) {
                 case ($string == 'null' || $string == 'NULL'):

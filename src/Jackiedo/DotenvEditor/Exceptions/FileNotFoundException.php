@@ -3,7 +3,7 @@
 use Exception;
 
 /**
- * This is the value not availabel exception class.
+ * This is file not found exception class.
  */
 class FileNotFoundException extends Exception
 {

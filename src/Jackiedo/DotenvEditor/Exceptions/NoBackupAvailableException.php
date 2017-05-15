@@ -3,7 +3,7 @@
 use Exception;
 
 /**
- * This is the value not availabel exception class.
+ * This is no backup available exception class.
  */
 class NoBackupAvailableException extends Exception
 {

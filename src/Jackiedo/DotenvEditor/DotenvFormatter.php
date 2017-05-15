@@ -18,9 +18,10 @@ class DotenvFormatter implements DotenvFormatterContract
      *
      * @return 	string
      */
-	public function formatKey($key) {
-		return trim(str_replace(array('export ', '\'', '"', ' '), '', $key));
-	}
+    public function formatKey($key)
+    {
+        return trim(str_replace(array('export ', '\'', '"', ' '), '', $key));
+    }
 
     /**
      * Formatting the value of setter to writing
@@ -30,7 +31,8 @@ class DotenvFormatter implements DotenvFormatterContract
      *
      * @return 	string
      */
-	public function formatValue($value, $forceQuotes = false) {
+    public function formatValue($value, $forceQuotes = false)
+    {
         if (!$forceQuotes && !preg_match('/[#\s"\'\\\\]|\\\\n/', $value)) {
             return $value;
         }
@@ -40,9 +42,9 @@ class DotenvFormatter implements DotenvFormatterContract
         $value = "\"{$value}\"";
 
         return $value;
-	}
+    }
 
-	/**
+    /**
      * Build an setter line from the individual components for writing
      *
      * @param string		$key
@@ -52,51 +54,55 @@ class DotenvFormatter implements DotenvFormatterContract
      *
      * @return string
      */
-	public function formatSetterLine($key, $value = null, $comment = null, $export = false) {
-		$forceQuotes = (strlen($comment) > 0 && strlen(trim($value)) == 0);
-		$value       = $this->formatValue($value, $forceQuotes);
-		$key         = $this->formatKey($key);
-		$comment     = $this->formatComment($comment);
-		$export      = $export ? 'export ' : '';
+    public function formatSetterLine($key, $value = null, $comment = null, $export = false)
+    {
+        $forceQuotes = (strlen($comment) > 0 && strlen(trim($value)) == 0);
+        $value       = $this->formatValue($value, $forceQuotes);
+        $key         = $this->formatKey($key);
+        $comment     = $this->formatComment($comment);
+        $export      = $export ? 'export ' : '';
 
-		$line = "{$export}{$key}={$value}{$comment}";
+        $line = "{$export}{$key}={$value}{$comment}";
 
-		return $line;
-	}
+        return $line;
+    }
 
-	/**
-	 * Formatting the comment to writing
-	 *
-	 * @param  string $comment
-	 *
-	 * @return string
-	 */
-	public function formatComment($comment) {
-		$comment = trim($comment, '# ');
+    /**
+     * Formatting the comment to writing
+     *
+     * @param  string $comment
+     *
+     * @return string
+     */
+    public function formatComment($comment)
+    {
+        $comment = trim($comment, '# ');
 
-		return (strlen($comment) > 0) ? " # {$comment}" : "";
-	}
+        return (strlen($comment) > 0) ? " # {$comment}" : "";
+    }
 
-	/**
-	 * Normalising the key of setter to reading
-	 *
-	 * @param  string $key
-	 *
-	 * @return string
-	 */
-	public function normaliseKey($key) {
-		return $this->formatKey($key);
-	}
+    /**
+     * Normalising the key of setter to reading
+     *
+     * @param  string $key
+     *
+     * @return string
+     */
+    public function normaliseKey($key)
+    {
+        return $this->formatKey($key);
+    }
 
-	/**
-	 * Normalising the value of setter to reading
-	 *
-	 * @param  string $value
-	 * @param  string $quote
-	 *
-	 * @return string
-	 */
-	public function normaliseValue($value, $quote = '') {
+    /**
+     * Normalising the value of setter to reading
+     *
+     * @param  string $value
+     * @param  string $quote
+     *
+     * @return string
+     */
+    public function normaliseValue($value, $quote = '')
+    {
         if (strlen($quote) == 0) {
             return trim($value);
         }
@@ -104,20 +110,21 @@ class DotenvFormatter implements DotenvFormatterContract
         $value = str_replace("\\$quote", $quote, $value);
         $value = str_replace('\\\\', '\\', $value);
         return $value;
-	}
+    }
 
-	/**
-	 * Normalising the comment to reading
-	 *
-	 * @param  string $comment
-	 *
-	 * @return string
-	 */
-	public function normaliseComment($comment) {
-		return trim($comment, '# ');
-	}
+    /**
+     * Normalising the comment to reading
+     *
+     * @param  string $comment
+     *
+     * @return string
+     */
+    public function normaliseComment($comment)
+    {
+        return trim($comment, '# ');
+    }
 
-	/**
+    /**
      * Parse a line into an array of type, export, key, value and comment
      *
      * @param  string $line
@@ -126,34 +133,35 @@ class DotenvFormatter implements DotenvFormatterContract
      *
      * @return array
      */
-	public function parseLine($line) {
-		$output = [
-			'type'    => null,
-			'export'  => null,
-			'key'     => null,
-			'value'   => null,
-			'comment' => null,
-		];
+    public function parseLine($line)
+    {
+        $output = [
+            'type'    => null,
+            'export'  => null,
+            'key'     => null,
+            'value'   => null,
+            'comment' => null,
+        ];
 
-		if ($this->isEmpty($line)) {
-			$output['type'] = 'empty';
-		} elseif ($this->isComment($line)) {
-			$output['type']    = 'comment';
-			$output['comment'] = $this->normaliseComment($line);
-		} elseif ($this->looksLikeSetter($line)) {
-			list($key, $data) = array_map('trim', explode('=', $line, 2));
-		    $export = $this->isExportKey($key);
-		    $key    = $this->normaliseKey($key);
-		    $data   = trim($data);
+        if ($this->isEmpty($line)) {
+            $output['type'] = 'empty';
+        } elseif ($this->isComment($line)) {
+            $output['type']    = 'comment';
+            $output['comment'] = $this->normaliseComment($line);
+        } elseif ($this->looksLikeSetter($line)) {
+            list($key, $data) = array_map('trim', explode('=', $line, 2));
+            $export = $this->isExportKey($key);
+            $key    = $this->normaliseKey($key);
+            $data   = trim($data);
 
-		    if (!$data) {
-				$value   = '';
-				$comment = '';
-		    } else {
-		    	if ($this->beginsWithAQuote($data)) { // data starts with a quote
-		            $quote = $data[0];
-		            $regexPattern = sprintf(
-		                '/^
+            if (!$data) {
+                $value   = '';
+                $comment = '';
+            } else {
+                if ($this->beginsWithAQuote($data)) { // data starts with a quote
+                    $quote = $data[0];
+                    $regexPattern = sprintf(
+                        '/^
 		                %1$s          # match a quote at the start of the data
 		                (             # capturing sub-pattern used
 		                 (?:          # we do not need to capture this
@@ -165,60 +173,62 @@ class DotenvFormatter implements DotenvFormatterContract
 		                %1$s          # and the closing quote
 		                (.*)$         # and discard any string after the closing quote
 		                /mx',
-		                $quote
-		            );
+                        $quote
+                    );
 
-		            $value  = preg_replace($regexPattern, '$1', $data);
-		            $extant = preg_replace($regexPattern, '$2', $data);
+                    $value  = preg_replace($regexPattern, '$1', $data);
+                    $extant = preg_replace($regexPattern, '$2', $data);
 
-		            $value = $this->normaliseValue($value, $quote);
-		            $comment = ($this->isComment($extant)) ? $this->normaliseComment($extant) : '';
-		        } else {
-		            $parts   = explode(' #', $data, 2);
+                    $value = $this->normaliseValue($value, $quote);
+                    $comment = ($this->isComment($extant)) ? $this->normaliseComment($extant) : '';
+                } else {
+                    $parts   = explode(' #', $data, 2);
 
-		            $value   = $this->normaliseValue($parts[0]);
-		            $comment = (isset($parts[1])) ? $this->normaliseComment($parts[1]) : '';
+                    $value   = $this->normaliseValue($parts[0]);
+                    $comment = (isset($parts[1])) ? $this->normaliseComment($parts[1]) : '';
 
-		            // Unquoted values cannot contain whitespace
-		            if (preg_match('/\s+/', $value) > 0) {
-		                throw new InvalidValueException('Dotenv values containing spaces must be surrounded by quotes.');
-		            }
-		        }
-		    }
+                    // Unquoted values cannot contain whitespace
+                    if (preg_match('/\s+/', $value) > 0) {
+                        throw new InvalidValueException('Dotenv values containing spaces must be surrounded by quotes.');
+                    }
+                }
+            }
 
-		    $output['type']    = 'setter';
-		    $output['export']  = $export;
-		    $output['key']     = $key;
-		    $output['value']   = $value;
-		    $output['comment'] = $comment;
-		} else {
-			$output['type'] = 'unknown';
-		}
+            $output['type']    = 'setter';
+            $output['export']  = $export;
+            $output['key']     = $key;
+            $output['value']   = $value;
+            $output['comment'] = $comment;
+        } else {
+            $output['type'] = 'unknown';
+        }
 
-		return $output;
-	}
+        return $output;
+    }
 
-	/**
+    /**
      * Determine if the line in the file is empty line
      *
      * @param string $line
      *
      * @return bool
      */
-	protected function isEmpty($line) {
-		return strlen(trim($line)) == 0;
-	}
+    protected function isEmpty($line)
+    {
+        return strlen(trim($line)) == 0;
+    }
 
-	/**
+    /**
      * Determine if the line in the file is a comment, e.g. begins with a #.
      *
      * @param string $line
      *
      * @return bool
      */
-	protected function isComment($line) {
-		return strpos(ltrim($line), '#') === 0;
-	}
+    protected function isComment($line)
+    {
+        return strpos(ltrim($line), '#') === 0;
+    }
 
     /**
      * Determine if the given line looks like it's setting a key.
@@ -227,7 +237,8 @@ class DotenvFormatter implements DotenvFormatterContract
      *
      * @return bool
      */
-    protected function looksLikeSetter($line) {
+    protected function looksLikeSetter($line)
+    {
         return strpos($line, '=') !== false && strpos($line, '=') !== 0;
     }
 
@@ -238,7 +249,8 @@ class DotenvFormatter implements DotenvFormatterContract
      *
      * @return bool
      */
-    protected function isExportKey($key) {
+    protected function isExportKey($key)
+    {
         $pattern = '/^export\h.*$/';
         if (preg_match($pattern, trim($key))) {
             return true;
@@ -253,7 +265,8 @@ class DotenvFormatter implements DotenvFormatterContract
      *
      * @return bool
      */
-    protected function beginsWithAQuote($data) {
+    protected function beginsWithAQuote($data)
+    {
         return strpbrk($data[0], '"\'') !== false;
     }
 }

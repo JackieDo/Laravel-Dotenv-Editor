@@ -2,7 +2,7 @@
 
 interface DotenvReader
 {
-	/**
+    /**
      * Load .env file
      *
      * @param  string $filePath
@@ -19,7 +19,7 @@ interface DotenvReader
      */
     public function lines();
 
-	/**
+    /**
      * Get all key informations in .env file
      */
     public function keys();

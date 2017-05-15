@@ -47,7 +47,6 @@ class DotenvGetBackupsCommand extends Command
      */
     public function handle()
     {
-
         $headers = ['File name', 'File path', 'Created at'];
         $backups = ($this->option('latest')) ? [$this->editor->getLatestBackup()] : $this->editor->getBackups();
         $total   = count($backups);

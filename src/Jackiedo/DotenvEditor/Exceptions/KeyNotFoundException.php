@@ -3,7 +3,7 @@
 use Exception;
 
 /**
- * This is the value not availabel exception class.
+ * This is key not found exception class.
  */
 class KeyNotFoundException extends Exception
 {
