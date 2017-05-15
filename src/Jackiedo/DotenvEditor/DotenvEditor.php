@@ -290,10 +290,10 @@ class DotenvEditor
 	/**
 	 * Set one key to buffer
 	 *
-	 * @param string		$key
-	 * @param string|null	$value
-	 * @param string|null	$comment
-	 * @param boolean		$export
+	 * @param string		$key        Key name of setter
+	 * @param string|null	$value      Value of setter
+	 * @param string|null	$comment    Comment of setter
+	 * @param boolean		$export     Leading key name by "export "
 	 *
 	 * @return DotenvEditor
 	 */
