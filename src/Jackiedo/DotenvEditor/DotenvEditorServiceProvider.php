@@ -31,19 +31,16 @@ class DotenvEditorServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $packageConfigPath = __DIR__ . '/../../config/config.php';
-
         /**
          * Loading and publishing package's config
          */
-        $config = config_path('dotenv-editor.php');
+        $packageConfigPath = __DIR__ . '/../../config/config.php';
+        $appConfigPath     = config_path('dotenv-editor.php');
 
-        if (file_exists($config)) {
-            $this->mergeConfigFrom($packageConfigPath, 'dotenv-editor');
-        }
+        $this->mergeConfigFrom($packageConfigPath, 'dotenv-editor');
 
         $this->publishes([
-            $packageConfigPath => $config,
+            $packageConfigPath => $appConfigPath,
         ], 'config');
     }
 
