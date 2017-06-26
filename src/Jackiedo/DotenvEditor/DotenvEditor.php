@@ -1,7 +1,7 @@
 <?php namespace Jackiedo\DotenvEditor;
 
-use Illuminate\Container\Container;
-use Jackiedo\DotenvEditor\Contracts\DotenvFormatter as DotenvFormatterContract;
+use Illuminate\Contracts\Container\Container;
+use Illuminate\Contracts\Config\Repository as Config;
 use Jackiedo\DotenvEditor\Exceptions\FileNotFoundException;
 use Jackiedo\DotenvEditor\Exceptions\KeyNotFoundException;
 use Jackiedo\DotenvEditor\Exceptions\NoBackupAvailableException;
@@ -20,6 +20,13 @@ class DotenvEditor
      * @var \Illuminate\Container\Container
      */
     protected $app;
+
+    /**
+     * Store instance of Config Repository;
+     *
+     * @var \Illuminate\Config\Repository
+     */
+    protected $config;
 
     /**
      * The formatter instance
@@ -76,24 +83,36 @@ class DotenvEditor
     /**
      * Create a new DotenvEditor instance
      *
-     * @param \Illuminate\Container\Container					$app
-     * @param \Jackiedo\DotenvEditor\Contracts\DotenvFormatter	$formatter
+     * @param  \Illuminate\Contracts\Container\Container  $app
+     * @param  \Illuminate\Contracts\Config\Repository    $config
+     *
+     * @return void
      */
-    public function __construct(Container $app, DotenvFormatterContract $formatter)
+    public function __construct(Container $app, Config $config)
     {
         $this->app       = $app;
-        $this->formatter = $formatter;
+        $this->config    = $config;
+        $this->formatter = new DotenvFormatter;
         $this->reader    = new DotenvReader($this->formatter);
         $this->writer    = new DotenvWriter($this->formatter);
 
-        $backupPath = $this->app['config']->get('dotenv-editor.backupPath', base_path('storage/dotenv-editor/backups/'));
+        $backupPath = $this->config->get('dotenv-editor.backupPath');
+
+        if (is_null($backupPath)) {
+            if (function_exists('base_path')) {
+                $backupPath = base_path('storage/dotenv-editor/backups/');
+            } else {
+                $backupPath = __DIR__.'/../../../../../../storage/dotenv-editor/backups/';
+            }
+        }
+
         if (!is_dir($backupPath)) {
             mkdir($backupPath, 0777, true);
             copy(__DIR__ . '/../../stubs/gitignore.txt', $backupPath . '../.gitignore');
         }
 
         $this->backupPath = $backupPath;
-        $this->autoBackup = $this->app['config']->get('dotenv-editor.autoBackup', true);
+        $this->autoBackup = $this->config->get('dotenv-editor.autoBackup', true);
 
         $this->load();
     }
@@ -101,9 +120,9 @@ class DotenvEditor
     /**
      * Load file for working
      *
-     * @param  string|null	$filePath              The file path
-     * @param  boolean		$restoreIfNotFound     Restore this file from other file if it's not found
-     * @param  string|null	$restorePath           The file path you want to restore from
+     * @param  string|null  $filePath           The file path
+     * @param  boolean      $restoreIfNotFound  Restore this file from other file if it's not found
+     * @param  string|null  $restorePath        The file path you want to restore from
      *
      * @return DotenvEditor
      */
@@ -111,7 +130,16 @@ class DotenvEditor
     {
         $this->resetContent();
 
-        $this->filePath = is_null($filePath) ? $this->app->environmentPath().'/'.$this->app->environmentFile() : $filePath;
+        if (! is_null($filePath)) {
+            $this->filePath = $filePath;
+        } else {
+            if (method_exists($this->app, 'environmentPath') && method_exists($this->app, 'environmentFile')) {
+                $this->filePath = $this->app->environmentPath().'/'.$this->app->environmentFile();
+            } else {
+                $this->filePath = __DIR__.'/../../../../../../.env';
+            }
+        }
+
         $this->reader->load($this->filePath);
 
         if (file_exists($this->filePath)) {
@@ -127,7 +155,7 @@ class DotenvEditor
     /**
      * Reset content for editor
      *
-     * @return void;
+     * @return void
      */
     protected function resetContent()
     {
@@ -207,7 +235,7 @@ class DotenvEditor
     /**
      * Return the value matching to a given key in the file content
      *
-     * @param $key
+     * @param  $key
      *
      * @throws \Jackiedo\DotenvEditor\Exceptions\KeyNotFoundException
      *
@@ -273,7 +301,7 @@ class DotenvEditor
     /**
      * Set many keys to buffer
      *
-     * @param array $data
+     * @param  array  $data
      *
      * @return DotenvEditor
      */
@@ -302,10 +330,10 @@ class DotenvEditor
     /**
      * Set one key to buffer
      *
-     * @param string		$key        Key name of setter
-     * @param string|null	$value      Value of setter
-     * @param string|null	$comment    Comment of setter
-     * @param boolean		$export     Leading key name by "export "
+     * @param string       $key      Key name of setter
+     * @param string|null  $value    Value of setter
+     * @param string|null  $comment  Comment of setter
+     * @param boolean      $export   Leading key name by "export "
      *
      * @return DotenvEditor
      */
@@ -335,7 +363,7 @@ class DotenvEditor
     /**
      * Delete on key in buffer
      *
-     * @param  string $key
+     * @param  string  $key
      *
      * @return DotenvEditor
      */
@@ -379,7 +407,7 @@ class DotenvEditor
     /**
      * Switching of the auto backup mode
      *
-     * @param  boolean $on
+     * @param  boolean  $on
      *
      * @return DotenvEditor
      */
@@ -475,7 +503,7 @@ class DotenvEditor
     /**
      * Restore the loaded file from latest backup file or from special file.
      *
-     * @param string|null	$filePath
+     * @param  string|null  $filePath
      *
      * @return DotenvEditor
      */
@@ -502,7 +530,7 @@ class DotenvEditor
     /**
      * Delete all or the given backup files
      *
-     * @param array	$filePaths
+     * @param  array  $filePaths
      *
      * @return DotenvEditor
      */
@@ -526,7 +554,7 @@ class DotenvEditor
     /**
      * Delete the given backup file
      *
-     * @param string	$filePath
+     * @param  string  $filePath
      *
      * @return DotenvEditor
      */

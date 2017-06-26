@@ -1,4 +1,4 @@
-# Laravel-Dotenv-Editor
+# Laravel Dotenv Editor
 ![laravel-dotenv-editor](https://cloud.githubusercontent.com/assets/9862115/25982836/029612b2-370a-11e7-82c5-d9146dc914a1.png)
 
 [![Latest Stable Version](https://poser.pugx.org/jackiedo/dotenv-editor/v/stable)](https://packagist.org/packages/jackiedo/dotenv-editor)
@@ -28,6 +28,8 @@ Look at one of the following topics to learn more about Laravel Dotenv Editor
     - [Auto backup mode](#auto-backup-mode)
     - [Backup location](#backup-location)
 * [Usage](#usage)
+    - [Working with facade](#working-with-facade)
+    - [Using dependency injection](#using-dependency-injection)
     - [Loading file for working](#loading-file-for-working)
     - [Reading file content](#reading-file-content)
     - [Writing content into file](#writing-content-into-file)
@@ -36,13 +38,12 @@ Look at one of the following topics to learn more about Laravel Dotenv Editor
     - [Working with Artisan CLI](#working-with-artisan-cli)
     - [Exceptions](#exceptions)
 * [License](#license)
+* [Thanks from author](#thanks-for-use)
 
 ## Versions and compatibility
-
 Currently, Laravel Dotenv Editor only have version 1.x that is compatible with Laravel 5.1 and later. This package is not support for Laravel 5.0 and earlier versions.
 
 ## Installation
-
 You can install this package through [Composer](https://getcomposer.org).
 
 - First, edit your project's `composer.json` file to require `jackiedo/dotenv-editor`:
@@ -55,11 +56,13 @@ You can install this package through [Composer](https://getcomposer.org).
 },
 ```
 
-- Next, update Composer from the Terminal on your project source:
+- Next, run the composer update command in your command line interface:
 
 ```shell
 $ composer update
 ```
+
+> **Note:** Instead of performing the above two steps, you can perform faster with the command line `$ composer require jackiedo/dotenv-editor:1.*`.
 
 - Once update operation completes, the third step is add the service provider. Open `config/app.php`, and add a new item to the providers array:
 
@@ -78,7 +81,6 @@ $ composer update
 ```
 
 ## Configuration
-
 To get started, you'll need to publish configuration file:
 
 ```shell
@@ -88,17 +90,55 @@ $ php artisan vendor:publish --provider="Jackiedo\DotenvEditor\DotenvEditorServi
 This will create a `config/dotenv-editor.php` file in your app that you can modify to set your configuration. Also, make sure you check for changes to the original config file in this package between releases.
 
 #### Auto backup mode
-
 The option `autoBackup` is determine that your orignal file will be backed up before save or not.
 
 #### Backup location
-
 The option `backupPath` is where that your file is backed up to. This value is the sub path (sub-folder) from root folder of project application.
 
 ## Usage
 
-#### Loading file for working
+#### Working with facade
+Laravel Dotenv Editor has a facade with name is `Jackiedo\DotenvEditor\Facades\DotenvEditor`. You can do any operation through this facade. For example:
 
+    <?php namespace Your\Namespace;
+
+    ...
+
+    use Jackiedo\DotenvEditor\Facades\DotenvEditor;
+
+    class YourClass
+    {
+        public function yourMethod()
+        {
+            DotenvEditor::doSomething();
+        }
+    }
+
+#### Using dependency injection
+This package also supports dependency injection, you can easily use dependency injection to inject an instance of the `Jackiedo\DotenvEditor\DotenvEditor` class into your controller or other class. Example:
+
+    <?php namespace App\Http\Controllers;
+
+    ...
+
+    use Jackiedo\DotenvEditor\DotenvEditor;
+
+    class TestDotenvEditorController extends Controller {
+
+        protected $editor;
+
+        public function __construct(DotenvEditor $editor)
+        {
+            $this->editor = $editor;
+        }
+
+        public function doSomething()
+        {
+            $editor = $this->editor->doSomething();
+        }
+    }
+
+#### Loading file for working
 Default, Laravel Dotenv Editor will load file `.env` in root folder of your project whenever you use the `DotenvEditor` facade. Example:
 
     $content = DotenvEditor::getContent(); // Get raw content of file .env in root folder
@@ -282,3 +322,6 @@ $ php artisan dotenv:get-backups --help
 
 ## License
 [MIT](LICENSE) © Jackie Do
+
+## Thanks for use
+Hopefully, this package is useful to you.
