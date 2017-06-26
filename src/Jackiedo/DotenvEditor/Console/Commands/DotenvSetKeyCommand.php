@@ -1,27 +1,21 @@
-<?php  namespace Jackiedo\DotenvEditor\Console;
+<?php  namespace Jackiedo\DotenvEditor\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Console\ConfirmableTrait;
 use Jackiedo\DotenvEditor\DotenvEditor;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
 class DotenvSetKeyCommand extends Command
 {
     use ConfirmableTrait;
 
     /**
-     * The name and signature of the console command.
+     * The console command name.
      *
      * @var string
      */
-    protected $signature = 'dotenv:set-key
-                            {key             : Key name will be added or updated}
-                            {value?          : Value want to set for this key}
-                            {comment?        : Comment want to set for this key. Type "false" to clear comment for exists key}
-                            {--filepath=     : The file path should use to load for working. Do not use if you want to load file .env at root application folder}
-                            {--r|restore     : Restore the loaded file from backup or special file if the loaded file is not found}
-                            {--restore-path= : The special file path should use to restore from. Do not use if you want to restore from latest backup file}
-                            {--e|export-key  : Leading before key name with "export " command}
-                            {--force         : Force the operation to run when in production}';
+    protected $name = 'dotenv:set-key';
 
     /**
      * The console command description.
@@ -103,7 +97,7 @@ class DotenvSetKeyCommand extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function fire()
     {
         $this->transferInputsToProperties();
 
@@ -170,5 +164,35 @@ class DotenvSetKeyCommand extends Command
         }
 
         return $string;
+    }
+
+    /**
+     * Get the console command arguments.
+     *
+     * @return array
+     */
+    protected function getArguments()
+    {
+        return [
+            array('key', InputArgument::REQUIRED, 'Key name will be added or updated.'),
+            array('value', InputArgument::OPTIONAL, 'Value want to set for this key.'),
+            array('comment', InputArgument::OPTIONAL, 'Comment want to set for this key. Type "false" to clear comment for exists key.')
+        ];
+    }
+
+    /**
+     * Get the console command options.
+     *
+     * @return array
+     */
+    protected function getOptions()
+    {
+        return [
+            array('filepath', null, InputOption::VALUE_OPTIONAL, 'The file path should use to load for working. Do not use if you want to load file .env at root application folder.'),
+            array('restore', 'r', InputOption::VALUE_NONE, 'Restore the loaded file from backup or special file if the loaded file is not found.'),
+            array('restore-path', null, InputOption::VALUE_OPTIONAL, 'The special file path should use to restore from. Do not use if you want to restore from latest backup file.'),
+            array('export-key', 'e', InputOption::VALUE_NONE, 'Leading before key name with "export " command.'),
+            array('force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.')
+        ];
     }
 }

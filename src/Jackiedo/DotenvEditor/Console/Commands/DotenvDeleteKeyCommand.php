@@ -1,22 +1,21 @@
-<?php  namespace Jackiedo\DotenvEditor\Console;
+<?php  namespace Jackiedo\DotenvEditor\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Console\ConfirmableTrait;
 use Jackiedo\DotenvEditor\DotenvEditor;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
 class DotenvDeleteKeyCommand extends Command
 {
     use ConfirmableTrait;
 
     /**
-     * The name and signature of the console command.
+     * The console command name.
      *
      * @var string
      */
-    protected $signature = 'dotenv:delete-key
-                            {key         : Key name will be deleted}
-                            {--filepath= : The file path should use to load for working. Do not use if you want to load file .env at root application folder}
-                            {--force     : Force the operation to run when in production}';
+    protected $name = 'dotenv:delete-key';
 
     /**
      * The console command description.
@@ -63,7 +62,7 @@ class DotenvDeleteKeyCommand extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function fire()
     {
         $this->transferInputsToProperties();
 
@@ -120,5 +119,30 @@ class DotenvDeleteKeyCommand extends Command
         }
 
         return $string;
+    }
+
+    /**
+     * Get the console command arguments.
+     *
+     * @return array
+     */
+    protected function getArguments()
+    {
+        return [
+            array('key', InputArgument::REQUIRED, 'Key name will be deleted.')
+        ];
+    }
+
+    /**
+     * Get the console command options.
+     *
+     * @return array
+     */
+    protected function getOptions()
+    {
+        return [
+            array('filepath', null, InputOption::VALUE_OPTIONAL, 'The file path should use to load for working. Do not use if you want to load file .env at root application folder.'),
+            array('force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.')
+        ];
     }
 }

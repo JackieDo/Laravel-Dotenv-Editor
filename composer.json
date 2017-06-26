@@ -10,10 +10,10 @@
         }
     ],
     "require": {
-        "php": ">=5.5.9",
-        "illuminate/config": ">=5.1",
-        "illuminate/container": ">=5.1",
-        "illuminate/support": ">=5.1"
+        "php": ">=5.4.0",
+        "illuminate/config": ">=5.0",
+        "illuminate/container": ">=5.0",
+        "illuminate/support": ">=5.0"
     },
     "autoload": {
         "psr-4": {

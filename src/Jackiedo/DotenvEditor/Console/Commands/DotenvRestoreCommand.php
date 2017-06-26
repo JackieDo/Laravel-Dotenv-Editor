@@ -1,8 +1,10 @@
-<?php  namespace Jackiedo\DotenvEditor\Console;
+<?php  namespace Jackiedo\DotenvEditor\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Console\ConfirmableTrait;
 use Jackiedo\DotenvEditor\DotenvEditor;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
 class DotenvRestoreCommand extends Command
 {
@@ -13,10 +15,7 @@ class DotenvRestoreCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'dotenv:restore
-                            {--filepath=     : The .env file path will be restored. Do not use if you want to restore file .env at root application folder}
-                            {--restore-path= : The special file path should use to restore. Do not use if you want to restore from latest backup file}
-                            {--force         : Force the operation to run when in production}';
+    protected $name = 'dotenv:restore';
 
     /**
      * The console command description.
@@ -63,7 +62,7 @@ class DotenvRestoreCommand extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function fire()
     {
         $this->transferInputsToProperties();
 
@@ -121,5 +120,29 @@ class DotenvRestoreCommand extends Command
         }
 
         return $string;
+    }
+
+    /**
+     * Get the console command arguments.
+     *
+     * @return array
+     */
+    protected function getArguments()
+    {
+        return [];
+    }
+
+    /**
+     * Get the console command options.
+     *
+     * @return array
+     */
+    protected function getOptions()
+    {
+        return [
+            array('filepath', null, InputOption::VALUE_OPTIONAL, 'The .env file path will be restored. Do not use if you want to restore file .env at root application folder.'),
+            array('restore-path', null, InputOption::VALUE_OPTIONAL, 'The special file path should use to restore. Do not use if you want to restore from latest backup file.'),
+            array('force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.')
+        ];
     }
 }
