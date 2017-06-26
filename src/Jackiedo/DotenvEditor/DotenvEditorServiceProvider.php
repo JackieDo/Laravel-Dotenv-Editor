@@ -51,10 +51,7 @@ class DotenvEditorServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton('dotenv-editor', function ($app) {
-            $formatter = new DotenvFormatter;
-            return new DotenvEditor($app, $formatter);
-        });
+        $this->app->bind('dotenv-editor', DotenvEditor::class);
 
         $this->registerCommands();
     }
@@ -66,29 +63,12 @@ class DotenvEditorServiceProvider extends ServiceProvider
      */
     protected function registerCommands()
     {
-        $this->app->singleton('command.dotenv.backup', function ($app) {
-            return new DotenvBackupCommand($app['dotenv-editor']);
-        });
-
-        $this->app->singleton('command.dotenv.deletekey', function ($app) {
-            return new DotenvDeleteKeyCommand($app['dotenv-editor']);
-        });
-
-        $this->app->singleton('command.dotenv.getbackups', function ($app) {
-            return new DotenvGetBackupsCommand($app['dotenv-editor']);
-        });
-
-        $this->app->singleton('command.dotenv.getkeys', function ($app) {
-            return new DotenvGetKeysCommand($app['dotenv-editor']);
-        });
-
-        $this->app->singleton('command.dotenv.restore', function ($app) {
-            return new DotenvRestoreCommand($app['dotenv-editor']);
-        });
-
-        $this->app->singleton('command.dotenv.setkey', function ($app) {
-            return new DotenvSetKeyCommand($app['dotenv-editor']);
-        });
+        $this->app->bind('command.dotenv.backup', DotenvBackupCommand::class);
+        $this->app->bind('command.dotenv.deletekey', DotenvDeleteKeyCommand::class);
+        $this->app->bind('command.dotenv.getbackups', DotenvGetBackupsCommand::class);
+        $this->app->bind('command.dotenv.getkeys', DotenvGetKeysCommand::class);
+        $this->app->bind('command.dotenv.restore', DotenvRestoreCommand::class);
+        $this->app->bind('command.dotenv.setkey', DotenvSetKeyCommand::class);
 
         $this->commands('command.dotenv.backup');
         $this->commands('command.dotenv.deletekey');
