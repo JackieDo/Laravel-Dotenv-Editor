@@ -29,7 +29,7 @@ class DotenvWriter implements DotenvWriterContract
     /**
      * Create a new writer instance
      *
-     * @param Jackiedo\DotenvEditor\Contracts\DotenvFormatter	$formatter
+     * @param Jackiedo\DotenvEditor\Contracts\DotenvFormatter   $formatter
      */
     public function __construct(DotenvFormatterContract $formatter)
     {
@@ -77,7 +77,7 @@ class DotenvWriter implements DotenvWriterContract
     /**
      * Append new line to buffer
      *
-     * @param  string|null	$text
+     * @param  string|null  $text
      *
      * @return DotenvWriter
      */
@@ -112,10 +112,10 @@ class DotenvWriter implements DotenvWriterContract
     /**
      * Append one setter to buffer
      *
-     * @param  string		$key
-     * @param  string|null	$value
-     * @param  string|null	$comment
-     * @param  boolean		$export
+     * @param  string       $key
+     * @param  string|null  $value
+     * @param  string|null  $comment
+     * @param  boolean      $export
      *
      * @return DotenvWriter
      */
@@ -129,10 +129,10 @@ class DotenvWriter implements DotenvWriterContract
     /**
      * Update one setter in buffer
      *
-     * @param  string		$key
-     * @param  string|null	$value
-     * @param  string|null	$comment
-     * @param  boolean		$export
+     * @param  string       $key
+     * @param  string|null  $value
+     * @param  string|null  $comment
+     * @param  boolean      $export
      *
      * @return DotenvWriter
      */

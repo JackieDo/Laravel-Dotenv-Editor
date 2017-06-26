@@ -41,7 +41,7 @@ Look at one of the following topics to learn more about Laravel Dotenv Editor
 * [Thanks from author](#thanks-for-use)
 
 ## Versions and compatibility
-Currently, Laravel Dotenv Editor only have version 1.x that is compatible with Laravel 5.1 and later. This package is not support for Laravel 5.0 and earlier versions.
+Currently, Laravel Dotenv Editor only have version 1.x that is compatible with Laravel 5+ and later. This package is not support for Laravel 4.2 and earlier versions.
 
 ## Installation
 You can install this package through [Composer](https://getcomposer.org).

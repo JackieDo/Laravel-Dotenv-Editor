@@ -14,9 +14,9 @@ class DotenvFormatter implements DotenvFormatterContract
     /**
      * Formatting the key of setter to writing
      *
-     * @param 	string	$key
+     * @param   string  $key
      *
-     * @return 	string
+     * @return  string
      */
     public function formatKey($key)
     {
@@ -26,10 +26,10 @@ class DotenvFormatter implements DotenvFormatterContract
     /**
      * Formatting the value of setter to writing
      *
-     * @param 	string	$value
-     * @param 	bool	$forceQuotes
+     * @param   string  $value
+     * @param   bool    $forceQuotes
      *
-     * @return 	string
+     * @return  string
      */
     public function formatValue($value, $forceQuotes = false)
     {
@@ -47,10 +47,10 @@ class DotenvFormatter implements DotenvFormatterContract
     /**
      * Build an setter line from the individual components for writing
      *
-     * @param string		$key
-     * @param string|null	$value
-     * @param string|null	$comment optional
-     * @param bool			$export optional
+     * @param string        $key
+     * @param string|null   $value
+     * @param string|null   $comment optional
+     * @param bool          $export optional
      *
      * @return string
      */
@@ -162,17 +162,17 @@ class DotenvFormatter implements DotenvFormatterContract
                     $quote = $data[0];
                     $regexPattern = sprintf(
                         '/^
-		                %1$s          # match a quote at the start of the data
-		                (             # capturing sub-pattern used
-		                 (?:          # we do not need to capture this
-		                  [^%1$s\\\\] # any character other than a quote or backslash
-		                  |\\\\\\\\   # or two backslashes together
-		                  |\\\\%1$s   # or an escaped quote e.g \"
-		                 )*           # as many characters that match the previous rules
-		                )             # end of the capturing sub-pattern
-		                %1$s          # and the closing quote
-		                (.*)$         # and discard any string after the closing quote
-		                /mx',
+                        %1$s          # match a quote at the start of the data
+                        (             # capturing sub-pattern used
+                         (?:          # we do not need to capture this
+                          [^%1$s\\\\] # any character other than a quote or backslash
+                          |\\\\\\\\   # or two backslashes together
+                          |\\\\%1$s   # or an escaped quote e.g \"
+                         )*           # as many characters that match the previous rules
+                        )             # end of the capturing sub-pattern
+                        %1$s          # and the closing quote
+                        (.*)$         # and discard any string after the closing quote
+                        /mx',
                         $quote
                     );
 

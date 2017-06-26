@@ -1,12 +1,6 @@
 <?php namespace Jackiedo\DotenvEditor;
 
 use Illuminate\Support\ServiceProvider;
-use Jackiedo\DotenvEditor\Console\DotenvBackupCommand;
-use Jackiedo\DotenvEditor\Console\DotenvDeleteKeyCommand;
-use Jackiedo\DotenvEditor\Console\DotenvGetBackupsCommand;
-use Jackiedo\DotenvEditor\Console\DotenvGetKeysCommand;
-use Jackiedo\DotenvEditor\Console\DotenvRestoreCommand;
-use Jackiedo\DotenvEditor\Console\DotenvSetKeyCommand;
 
 /**
  * DotenvEditorServiceProvider
@@ -51,7 +45,7 @@ class DotenvEditorServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind('dotenv-editor', DotenvEditor::class);
+        $this->app->bind('dotenv-editor', 'Jackiedo\DotenvEditor\DotenvEditor');
 
         $this->registerCommands();
     }
@@ -63,12 +57,12 @@ class DotenvEditorServiceProvider extends ServiceProvider
      */
     protected function registerCommands()
     {
-        $this->app->bind('command.dotenv.backup', DotenvBackupCommand::class);
-        $this->app->bind('command.dotenv.deletekey', DotenvDeleteKeyCommand::class);
-        $this->app->bind('command.dotenv.getbackups', DotenvGetBackupsCommand::class);
-        $this->app->bind('command.dotenv.getkeys', DotenvGetKeysCommand::class);
-        $this->app->bind('command.dotenv.restore', DotenvRestoreCommand::class);
-        $this->app->bind('command.dotenv.setkey', DotenvSetKeyCommand::class);
+        $this->app->bind('command.dotenv.backup', 'Jackiedo\DotenvEditor\Console\Commands\DotenvBackupCommand');
+        $this->app->bind('command.dotenv.deletekey', 'Jackiedo\DotenvEditor\Console\Commands\DotenvDeleteKeyCommand');
+        $this->app->bind('command.dotenv.getbackups', 'Jackiedo\DotenvEditor\Console\Commands\DotenvGetBackupsCommand');
+        $this->app->bind('command.dotenv.getkeys', 'Jackiedo\DotenvEditor\Console\Commands\DotenvGetKeysCommand');
+        $this->app->bind('command.dotenv.restore', 'Jackiedo\DotenvEditor\Console\Commands\DotenvRestoreCommand');
+        $this->app->bind('command.dotenv.setkey', 'Jackiedo\DotenvEditor\Console\Commands\DotenvSetKeyCommand');
 
         $this->commands('command.dotenv.backup');
         $this->commands('command.dotenv.deletekey');
