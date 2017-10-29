@@ -4,6 +4,8 @@ use Illuminate\Console\Command;
 use Jackiedo\DotenvEditor\DotenvEditor;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class DotenvGetBackupsCommand extends Command
 {
@@ -39,6 +41,17 @@ class DotenvGetBackupsCommand extends Command
         parent::__construct();
 
         $this->editor = $editor;
+    }
+
+    /**
+     * Execute the console command for laravel 5.*.
+     *
+     * @return mixed
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        $method = method_exists($this, 'handle') ? 'handle' : 'fire';
+        return $this->laravel->call([$this, $method]);
     }
 
     /**
