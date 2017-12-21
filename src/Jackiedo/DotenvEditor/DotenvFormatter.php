@@ -154,7 +154,7 @@ class DotenvFormatter implements DotenvFormatterContract
             $key    = $this->normaliseKey($key);
             $data   = trim($data);
 
-            if (!$data) {
+            if (!$data && $data !== "0") {
                 $value   = '';
                 $comment = '';
             } else {
