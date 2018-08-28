@@ -53,7 +53,7 @@ class DotenvBackupCommand extends Command
      *
      * @return mixed
      */
-    public function fire()
+    public function handle()
     {
         $filePath       = $this->stringToType($this->option('filepath'));
         $this->filePath = (is_string($filePath)) ? base_path($filePath) : null;
