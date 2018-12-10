@@ -2,13 +2,13 @@
 
 use Illuminate\Console\Command;
 use Illuminate\Console\ConfirmableTrait;
-use Jackiedo\DotenvEditor\DotenvEditor;
+use Jackiedo\DotenvEditor\Console\Traits\CreateCommandInstanceTrait;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
 class DotenvDeleteKeyCommand extends Command
 {
-    use ConfirmableTrait;
+    use ConfirmableTrait, CreateCommandInstanceTrait;
 
     /**
      * The console command name.
@@ -25,13 +25,6 @@ class DotenvDeleteKeyCommand extends Command
     protected $description = 'Delete one setter in the .env file';
 
     /**
-     * The .env file editor instance
-     *
-     * @var \Jackiedo\DotenvEditor\DotenvEditor
-     */
-    protected $editor;
-
-    /**
      * The .env file path
      *
      * @var string|null
@@ -44,18 +37,6 @@ class DotenvDeleteKeyCommand extends Command
      * @var string
      */
     protected $key;
-
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct(DotenvEditor $editor)
-    {
-        parent::__construct();
-
-        $this->editor = $editor;
-    }
 
     /**
      * Execute the console command.
