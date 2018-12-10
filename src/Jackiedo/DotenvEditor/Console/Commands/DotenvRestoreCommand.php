@@ -2,13 +2,13 @@
 
 use Illuminate\Console\Command;
 use Illuminate\Console\ConfirmableTrait;
-use Jackiedo\DotenvEditor\DotenvEditor;
+use Jackiedo\DotenvEditor\Console\Traits\CreateCommandInstanceTrait;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
 class DotenvRestoreCommand extends Command
 {
-    use ConfirmableTrait;
+    use ConfirmableTrait, CreateCommandInstanceTrait;
 
     /**
      * The name and signature of the console command.
@@ -25,13 +25,6 @@ class DotenvRestoreCommand extends Command
     protected $description = 'Restore the .env file from backup or special file';
 
     /**
-     * The .env file editor instance
-     *
-     * @var \Jackiedo\DotenvEditor\DotenvEditor
-     */
-    protected $editor;
-
-    /**
      * The .env file path
      *
      * @var string|null
@@ -44,18 +37,6 @@ class DotenvRestoreCommand extends Command
      * @var string|null
      */
     protected $retorePath = null;
-
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct(DotenvEditor $editor)
-    {
-        parent::__construct();
-
-        $this->editor = $editor;
-    }
 
     /**
      * Execute the console command.

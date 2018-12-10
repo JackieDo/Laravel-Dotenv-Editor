@@ -1,12 +1,13 @@
 <?php  namespace Jackiedo\DotenvEditor\Console\Commands;
 
 use Illuminate\Console\Command;
-use Jackiedo\DotenvEditor\DotenvEditor;
+use Jackiedo\DotenvEditor\Console\Traits\CreateCommandInstanceTrait;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
 class DotenvGetKeysCommand extends Command
 {
+    use CreateCommandInstanceTrait;
 
     /**
      * The console command name.
@@ -23,30 +24,11 @@ class DotenvGetKeysCommand extends Command
     protected $description = 'List all setter in the .env file';
 
     /**
-     * The .env file editor instance
-     *
-     * @var \Jackiedo\DotenvEditor\DotenvEditor
-     */
-    protected $editor;
-
-    /**
      * The .env file path
      *
      * @var string|null
      */
     protected $filePath = null;
-
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct(DotenvEditor $editor)
-    {
-        parent::__construct();
-
-        $this->editor = $editor;
-    }
 
     /**
      * Execute the console command.

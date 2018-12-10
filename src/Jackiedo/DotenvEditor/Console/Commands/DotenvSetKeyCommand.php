@@ -2,13 +2,13 @@
 
 use Illuminate\Console\Command;
 use Illuminate\Console\ConfirmableTrait;
-use Jackiedo\DotenvEditor\DotenvEditor;
+use Jackiedo\DotenvEditor\Console\Traits\CreateCommandInstanceTrait;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
 class DotenvSetKeyCommand extends Command
 {
-    use ConfirmableTrait;
+    use ConfirmableTrait, CreateCommandInstanceTrait;
 
     /**
      * The console command name.
@@ -23,13 +23,6 @@ class DotenvSetKeyCommand extends Command
      * @var string
      */
     protected $description = 'Add new or update one setter into the .env file';
-
-    /**
-     * The .env file editor instance
-     *
-     * @var \Jackiedo\DotenvEditor\DotenvEditor
-     */
-    protected $editor;
 
     /**
      * The .env file path
@@ -79,18 +72,6 @@ class DotenvSetKeyCommand extends Command
      * @var boolean
      */
     protected $exportKey = false;
-
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct(DotenvEditor $editor)
-    {
-        parent::__construct();
-
-        $this->editor = $editor;
-    }
 
     /**
      * Execute the console command.

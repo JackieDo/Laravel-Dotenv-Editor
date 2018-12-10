@@ -47,7 +47,7 @@ class DotenvWriter implements DotenvWriterContract
     protected function ensureFileIsWritable($filePath)
     {
         if ((is_file($filePath) && !is_writable($filePath)) || (!is_file($filePath) && !is_writable(dirname($filePath)))) {
-            throw new UnableWriteToFileException(sprintf('Unable to write to the file at %s.', $this->filePath));
+            throw new UnableWriteToFileException(sprintf('Unable to write to the file at %s.', $filePath));
         }
     }
 
