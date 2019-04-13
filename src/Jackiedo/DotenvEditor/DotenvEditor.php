@@ -444,13 +444,13 @@ class DotenvEditor
      */
     public function getBackups()
     {
-        $backups = array_diff(scandir($this->backupPath), array('..', '.'));
+        $filenameRegex  = '/^' .preg_quote(self::BACKUP_FILENAME_PREFIX, '/'). '(\d{4})_(\d{2})_(\d{2})_(\d{2})(\d{2})(\d{2})' .preg_quote(self::BACKUP_FILENAME_SUFFIX, '/'). '$/';
+        $backups = array_filter(array_diff(scandir($this->backupPath), array('..', '.')), function($backup) use ($filenameRegex) {
+            return preg_match($filenameRegex, $backup);
+        });
         $output = [];
 
         foreach ($backups as $backup) {
-            $filenamePrefix = preg_quote(self::BACKUP_FILENAME_PREFIX, '/');
-            $filenameSuffix = preg_quote(self::BACKUP_FILENAME_SUFFIX, '/');
-            $filenameRegex  = '/^' .$filenamePrefix. '(\d{4})_(\d{2})_(\d{2})_(\d{2})(\d{2})(\d{2})' .$filenameSuffix. '$/';
 
             $datetime = preg_replace($filenameRegex, '$1-$2-$3 $4:$5:$6', $backup);
 
