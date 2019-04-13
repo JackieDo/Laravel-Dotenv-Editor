@@ -66,6 +66,8 @@ $ composer update
 
 - Once update operation completes, the third step is add the service provider. Open `config/app.php`, and add a new item to the providers array:
 
+> Since Laravel 5.5, [service providers and aliases are automatically registered](https://laravel.com/docs/5.5/packages#package-discovery). If you're using Laravel 5.5 or newer, you can safely skip these two steps.
+
 ```php
 ...
 'providers' => array(
