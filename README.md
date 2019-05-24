@@ -6,16 +6,16 @@
 [![Latest Unstable Version](https://poser.pugx.org/jackiedo/dotenv-editor/v/unstable)](https://packagist.org/packages/jackiedo/dotenv-editor)
 [![License](https://poser.pugx.org/jackiedo/dotenv-editor/license)](https://packagist.org/packages/jackiedo/dotenv-editor)
 
-Laravel Dotenv Editor is an the .env file editor (or files with same structure and syntax) for Laravel 5+. Now you can easily edit .env files with following features:
+Laravel Dotenv Editor is the .env file editor (or files with same structure and syntax) for Laravel 5+. Now you can easily edit .env files with the following features:
 
 * Read raw content of file
-* Read lines in file content
-* Read setters (key-value-pair) in file content
-* Determine one key name of setter if exists
-* Append empty lines into file
-* Append comment lines into file
-* Append new or update exists setter lines into file
-* Delete exists setter line in file
+* Read lines of file content
+* Read setters (key-value-pair) of file content
+* Determine one key name of existing setter
+* Append empty lines to file
+* Append comment lines to file
+* Append new or update exists setter lines to file
+* Delete existing setter line in file
 * Backup and restore file
 * Manage backup files
 
@@ -41,7 +41,7 @@ Look at one of the following topics to learn more about Laravel Dotenv Editor
 * [Thanks from author](#thanks-for-use)
 
 ## Versions and compatibility
-Currently, Laravel Dotenv Editor only have version 1.x that is compatible with Laravel 5+ and later. This package is not support for Laravel 4.2 and earlier versions.
+Currently, only Laravel Dotenv Editor 1.x is compatible with Laravel 5+ and later. This package does not support Laravel 4.2 and earlier versions.
 
 ## Installation
 You can install this package through [Composer](https://getcomposer.org).
@@ -62,9 +62,9 @@ You can install this package through [Composer](https://getcomposer.org).
 $ composer update
 ```
 
-> **Note:** Instead of performing the above two steps, you can perform faster with the command line `$ composer require jackiedo/dotenv-editor:1.*`.
+> **Note:** Instead of performing the above two steps, it may be faster to use the command line `$ composer require jackiedo/dotenv-editor:1.*`.
 
-- Once update operation completes, the third step is add the service provider. Open `config/app.php`, and add a new item to the providers array:
+- Once the update operation completes, the third step is to add the service provider. Open `config/app.php`, and add a new item to the providers array:
 
 ```php
 ...
@@ -74,14 +74,14 @@ $ composer update
 ),
 ```
 
-- The next step is add the follow line to the section `aliases` in file `config/app.php`:
+- The next step is to add the following line to the section `aliases` in the file `config/app.php`:
 
 ```php
 'DotenvEditor' => Jackiedo\DotenvEditor\Facades\DotenvEditor::class,
 ```
 
 ## Configuration
-To get started, you'll need to publish configuration file:
+To get started, you'll need to publish the configuration file:
 
 ```shell
 $ php artisan vendor:publish --provider="Jackiedo\DotenvEditor\DotenvEditorServiceProvider" --tag="config"
@@ -90,15 +90,15 @@ $ php artisan vendor:publish --provider="Jackiedo\DotenvEditor\DotenvEditorServi
 This will create a `config/dotenv-editor.php` file in your app that you can modify to set your configuration. Also, make sure you check for changes to the original config file in this package between releases.
 
 #### Auto backup mode
-The option `autoBackup` is determine that your orignal file will be backed up before save or not.
+The option `autoBackup` determines if your orignal file will be backed up before saving or not.
 
 #### Backup location
-The option `backupPath` is where that your file is backed up to. This value is the sub path (sub-folder) from root folder of project application.
+The option `backupPath` specifies where your file is backed up to. This value is a sub path (sub-folder) from the root folder of the project application.
 
 ## Usage
 
 #### Working with facade
-Laravel Dotenv Editor has a facade with name is `Jackiedo\DotenvEditor\Facades\DotenvEditor`. You can do any operation through this facade. For example:
+Laravel Dotenv Editor has a facade with the name `Jackiedo\DotenvEditor\Facades\DotenvEditor`. You can do all operations through this facade. For example:
 
     <?php namespace Your\Namespace;
 
@@ -115,7 +115,7 @@ Laravel Dotenv Editor has a facade with name is `Jackiedo\DotenvEditor\Facades\D
     }
 
 #### Using dependency injection
-This package also supports dependency injection, you can easily use dependency injection to inject an instance of the `Jackiedo\DotenvEditor\DotenvEditor` class into your controller or other class. Example:
+This package also supports dependency injection. You can easily use dependency injection to inject an instance of the `Jackiedo\DotenvEditor\DotenvEditor` class into your controller or other classes. Example:
 
     <?php namespace App\Http\Controllers;
 
@@ -139,84 +139,84 @@ This package also supports dependency injection, you can easily use dependency i
     }
 
 #### Loading file for working
-Default, Laravel Dotenv Editor will load file `.env` in root folder of your project whenever you use the `DotenvEditor` facade. Example:
+By default, Laravel Dotenv Editor will load the file `.env` in the root folder of your project whenever you use the `DotenvEditor` facade. Example:
 
     $content = DotenvEditor::getContent(); // Get raw content of file .env in root folder
 
-However, if you want to explicitly specify what files you will work with, you should use method `load()`. Example:
+However, if you want to explicitly specify what files you will work with, you should use the `load()` method. Example:
 
     $file = DotenvEditor::load(); // Working with file .env in root folder
     $file = DotenvEditor::load('.env.example'); // Working with file .env.example in root folder
     $file = DotenvEditor::load(storage_path('dotenv-editor/backups/.env.backup')); // Working with file .env.backup in folder storage/dotenv-editor/backups/
 
-Method `load()` have three parameters:
+The `load()` method has three parameters:
 
     $file = DotenvEditor::load($filePath, $restoreIfNotFound, $restorePath);
 
-- The first parameter is the path to file you want to work with. Set `null` to work with file `.env` in root folder.
-- The second parameter is allow restoring your file if it is not found.
-- The third parameter is the path to file use to restoring. Set `null` to restore from a earlier backup file.
+- The first parameter is the path to the file you want to work with. Set `null` to work with the file `.env` in the root folder.
+- The second parameter allows restoring your file if it is not found.
+- The third parameter is the path to the file used to restoring. Set `null` to restore from an older backup file.
 
 #### Reading file content
 
 ###### Reading raw content.
-You can use method `getContent()` to get raw content in your file. Example:
+You can use the `getContent()` method to get the raw content of your file. Example:
 
     $content = DotenvEditor::getContent();
 
-This will return raw file content as a string
+This will return the raw file content as a string.
 
 ###### Reading content by lines.
-Use method `getLines()` to get all lines in your file. Example:
+Use the `getLines()` method to get all lines of your file. Example:
 
     $lines = DotenvEditor::getLines();
 
-This will return an array. Each element in array, you can see following info:
-- Number of line
-- Raw content of line
-- Parsed content of line, include: type of line (empty, comment, setter...), key name of setter, value of setter, comment of setter...
+This will return an array. Each element in the array consists of the following items:
+- Number of the line
+- Raw content of the line
+- Parsed content of the line, including: type of line (empty, comment, setter...), key name of setter, value of setter, comment of setter...
 
 ###### Reading content by keys
-Use method `getKeys($keys = [])` to get all setter lines in your file. Example:
+Use the `getKeys($keys = [])` method to get all setter lines of your file. Example:
 
     $keys = DotenvEditor::getKeys(); // Get all keys
     $keys = DotenvEditor::getKeys(['APP_DEBUG', 'APP_URL']); // Only get two given keys if exists
 
-This will return an array. Each element in array, you can see following info:
-- Number of line
-- Key name of setter
-- Value of setter
-- Comment of setter
-- This key used "export " command or not
+This will return an array. Each element in the array consists of the following items:
+- Number of the line
+- Key name of the setter
+- Value of the setter
+- Comment of the setter
+- If this key is used for the "export" command or not
 
-###### Determine if key is exists
-Use method `keyExists($key)`. Example:
+###### Determine if a key exists
+Use the `keyExists($key)` method. Example:
 
     $keyExists = DotenvEditor::keyExists('APP_URL'); // Return true|false
 
 ###### Get value of a key
-Use method `getValue($key)`. Example:
+Use the `getValue($key)` method. Example:
 
     $value = DotenvEditor::getValue('APP_URL');
 
-#### Writing content into file
+#### Writing content into a file
 
-To edit file content, you have two job:
-- First is writing content into buffer
-- Second is saving buffer into file
+To edit file content, you have two jobs:
+- First is writing content into the buffer
+- Second is saving the buffer into the file
 
 ###### Add an empty line into buffer
-Use method `addEmpty()`. Example:
+Use the `addEmpty()` method. Example:
 
     $file = DotenvEditor::addEmpty();
 
 ###### Add a comment line into buffer
-Use method `addComment($comment)`. Example:
+Use the `addComment($comment)` method. Example:
 
     $file = DotenvEditor::addComment('This is a comment line');
 
 ###### Add or update a setter into buffer
-Use method `setKey($key, $value = null, $comment = null, $export = false)`. Example:
+Use the `setKey($key, $value = null, $comment = null, $export = false)` method. Example:
 
     $file = DotenvEditor::setKey('ENV_KEY'); // Set key ENV_KEY with empty value
     $file = DotenvEditor::setKey('ENV_KEY', 'anything-you-want'); // Set key ENV_KEY with none empty value
@@ -226,7 +226,7 @@ Use method `setKey($key, $value = null, $comment = null, $export = false)`. Exam
     $file = DotenvEditor::setKey('ENV_KEY', 'new-value-2', '', false); // Update key ENV_KEY with a new value and clear comment
 
 ###### Add or update multi setter into buffer
-Use method `setKeys($data)`. Example:
+Use the `setKeys($data)` method. Example:
 
     $file = DotenvEditor::setKeys([
         [
@@ -247,12 +247,12 @@ Use method `setKeys($data)`. Example:
     ]);
 
 ###### Delete a setter line in buffer
-Use method `deleteKey($key)`. Example:
+Use the `deleteKey($key)` method. Example:
 
     $file = DotenvEditor::deleteKey('ENV_KEY');
 
 ###### Delete multi setter lines in buffer
-Use method `deleteKeys($keys)`. Example:
+Use the `deleteKeys($keys)` method. Example:
 
     $file = DotenvEditor::deleteKeys(['ENV_KEY_1', 'ENV_KEY_2']); // Delete two keys
 
@@ -298,13 +298,13 @@ Use method `deleteKeys($keys)`. Example:
     $file = DotenvEditor::autoBackup(false); // Disable auto backup
 
 #### Method chaining
-Some functions of loading, writing, backing up, restoring are implementation and usage of method chaining. So these functions can be called to chained together in a single statement. Example:
+Some functions of loading, writing, backing up, restoring support method chaining. So these functions can be called chained together in a single statement. Example:
 
     $file = DotenvEditor::load('.env.example')->backup()->setKey('APP_URL', 'http://example.com')->save();
     return $file->getKeys();
 
 #### Working with Artisan CLI
-Now, Laravel Dotenv Editor have total 6 commands can use easily with Artisan CLI. Such as:
+Now, Laravel Dotenv Editor has 6 commands which can be used easily with the Artisan CLI. These are:
 - php artisan dotenv:backup
 - php artisan dotenv:get-backups
 - php artisan dotenv:restore
@@ -312,7 +312,7 @@ Now, Laravel Dotenv Editor have total 6 commands can use easily with Artisan CLI
 - php artisan dotenv:set-key
 - php artisan dotenv:delete-key
 
-Please use each above command with option --help for details of usage. Example:
+Please use each of the commands with the `--help` option to leanr more about there usage. Example:
 
 ```shell
 $ php artisan dotenv:get-backups --help
