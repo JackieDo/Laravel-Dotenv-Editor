@@ -60,6 +60,10 @@ class DotenvWriter implements DotenvWriterContract
      */
     public function setBuffer($content)
     {
+        if ($content !== '' && substr($content, -1) !== PHP_EOL) {
+            $content .= PHP_EOL;
+        }
+
         $this->buffer = $content;
         return $this;
     }
