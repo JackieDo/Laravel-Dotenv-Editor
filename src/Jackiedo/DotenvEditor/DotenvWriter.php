@@ -140,7 +140,9 @@ class DotenvWriter implements DotenvWriterContract
     {
         $pattern = "/^(export\h)?\h*{$key}=.*/m";
         $line = $this->formatter->formatSetterLine($key, $value, $comment, $export);
-        $this->buffer = preg_replace($pattern, $line, $this->buffer);
+        $this->buffer = preg_replace_callback($pattern, function () use ($line) {
+            return $line;
+        }, $this->buffer);
 
         return $this;
     }
