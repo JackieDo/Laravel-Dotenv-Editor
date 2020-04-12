@@ -60,6 +60,10 @@ class DotenvWriter implements DotenvWriterContract
      */
     public function setBuffer($content)
     {
+        if ($content !== '' && substr($content, -1) !== PHP_EOL) {
+            $content .= PHP_EOL;
+        }
+
         $this->buffer = $content;
         return $this;
     }
@@ -140,7 +144,9 @@ class DotenvWriter implements DotenvWriterContract
     {
         $pattern = "/^(export\h)?\h*{$key}=.*/m";
         $line = $this->formatter->formatSetterLine($key, $value, $comment, $export);
-        $this->buffer = preg_replace($pattern, $line, $this->buffer);
+        $this->buffer = preg_replace_callback($pattern, function () use ($line) {
+            return $line;
+        }, $this->buffer);
 
         return $this;
     }
