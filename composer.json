@@ -23,6 +23,14 @@
     "extra": {
         "branch-alias": {
             "dev-master": "1.0-dev"
+        },
+        "laravel": {
+            "providers": [
+                "Jackiedo\\DotenvEditor\\DotenvEditorServiceProvider"
+            ],
+            "aliases": {
+                "DotenvEditor": "Jackiedo\\DotenvEditor\\Facades\\DotenvEditor"
+            }
         }
     },
     "minimum-stability": "stable"
