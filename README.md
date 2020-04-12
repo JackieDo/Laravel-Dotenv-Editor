@@ -27,6 +27,7 @@ Look at one of the following topics to learn more about Laravel Dotenv Editor
 * [Configuration](#configuration)
     - [Auto backup mode](#auto-backup-mode)
     - [Backup location](#backup-location)
+    - [Always create backup folder](#always-create-backup-folder)
 * [Usage](#usage)
     - [Working with facade](#working-with-facade)
     - [Using dependency injection](#using-dependency-injection)
