@@ -90,29 +90,27 @@ class DotenvEditor
      */
     public function __construct(Container $app, Config $config)
     {
-        $this->app       = $app;
-        $this->config    = $config;
-        $this->formatter = new DotenvFormatter;
-        $this->reader    = new DotenvReader($this->formatter);
-        $this->writer    = new DotenvWriter($this->formatter);
+        $this->app        = $app;
+        $this->config     = $config;
+        $this->formatter  = new DotenvFormatter;
+        $this->reader     = new DotenvReader($this->formatter);
+        $this->writer     = new DotenvWriter($this->formatter);
+        $this->autoBackup = $this->config->get('dotenv-editor.autoBackup', true);
+        $this->backupPath = $this->config->get('dotenv-editor.backupPath');
 
-        $backupPath = $this->config->get('dotenv-editor.backupPath');
-
-        if (is_null($backupPath)) {
+        if (is_null($this->backupPath)) {
             if (function_exists('base_path')) {
-                $backupPath = base_path('storage/dotenv-editor/backups/');
+                $this->backupPath = base_path('storage/dotenv-editor/backups/');
             } else {
-                $backupPath = __DIR__.'/../../../../../../storage/dotenv-editor/backups/';
+                $this->backupPath = __DIR__.'/../../../../../../storage/dotenv-editor/backups/';
             }
         }
 
-        if (!is_dir($backupPath)) {
-            mkdir($backupPath, 0777, true);
-            copy(__DIR__ . '/../../stubs/gitignore.txt', $backupPath . '../.gitignore');
-        }
+        $this->backupPath = rtrim($this->backupPath, '\\/') . '/';
 
-        $this->backupPath = $backupPath;
-        $this->autoBackup = $this->config->get('dotenv-editor.autoBackup', true);
+        if ($this->config->get('dotenv-editor.alwaysCreateBackupFolder', false)) {
+            $this->createBackupFolder();
+        }
 
         $this->load();
     }
@@ -144,12 +142,15 @@ class DotenvEditor
 
         if (file_exists($this->filePath)) {
             $this->writer->setBuffer($this->getContent());
-            return $this;
-        } elseif ($restoreIfNotFound) {
-            return $this->restore($restorePath);
-        } else {
+
             return $this;
         }
+
+        if ($restoreIfNotFound) {
+            return $this->restore($restorePath);
+        }
+
+        return $this;
     }
 
     /**
@@ -160,8 +161,22 @@ class DotenvEditor
     protected function resetContent()
     {
         $this->filePath = null;
+
         $this->reader->load(null);
         $this->writer->setBuffer(null);
+    }
+
+    /**
+     * Create backup folder if not exists
+     *
+     * @return void
+     */
+    protected function createBackupFolder()
+    {
+        if (! is_dir($this->backupPath)) {
+            mkdir($this->backupPath, 0777, true);
+            copy(__DIR__ . '/../../stubs/gitignore.txt', $this->backupPath . '../.gitignore');
+        }
     }
 
     /*
@@ -212,6 +227,7 @@ class DotenvEditor
             if (!empty($keys)) {
                 return in_array($key, $keys);
             }
+
             return true;
         }, ARRAY_FILTER_USE_KEY);
     }
@@ -226,10 +242,8 @@ class DotenvEditor
     public function keyExists($key)
     {
         $allKeys = $this->getKeys();
-        if (array_key_exists($key, $allKeys)) {
-            return true;
-        }
-        return false;
+
+        return array_key_exists($key, $allKeys);
     }
 
     /**
@@ -244,9 +258,11 @@ class DotenvEditor
     public function getValue($key)
     {
         $allKeys = $this->getKeys([$key]);
+
         if (array_key_exists($key, $allKeys)) {
             return $allKeys[$key]['value'];
         }
+
         throw new KeyNotFoundException('Requested key not found in your file.');
     }
 
@@ -284,6 +300,7 @@ class DotenvEditor
     public function addEmpty()
     {
         $this->writer->appendEmptyLine();
+
         return $this;
     }
 
@@ -291,10 +308,13 @@ class DotenvEditor
      * Add comment line to buffer
      *
      * @param object
+     *
+     * @return DotenvEditor
      */
     public function addComment($comment)
     {
         $this->writer->appendCommentLine($comment);
+
         return $this;
     }
 
@@ -319,6 +339,7 @@ class DotenvEditor
                 } else {
                     $oldInfo = $this->getKeys([$key]);
                     $comment = is_null($comment) ? $oldInfo[$key]['comment'] : $comment;
+
                     $this->writer->updateSetter($key, $value, $comment, $export);
                 }
             }
@@ -386,6 +407,7 @@ class DotenvEditor
         }
 
         $this->writer->save($this->filePath);
+
         return $this;
     }
 
@@ -414,6 +436,7 @@ class DotenvEditor
     public function autoBackup($on = true)
     {
         $this->autoBackup = $on;
+
         return $this;
     }
 
@@ -426,8 +449,12 @@ class DotenvEditor
     {
         if (!is_file($this->filePath)) {
             throw new FileNotFoundException("File does not exist at path {$this->filePath}");
+
             return false;
         }
+
+        // Make sure the backup directory exists
+        $this->createBackupFolder();
 
         copy(
             $this->filePath,
@@ -444,23 +471,23 @@ class DotenvEditor
      */
     public function getBackups()
     {
-        $filenameRegex  = '/^' .preg_quote(self::BACKUP_FILENAME_PREFIX, '/'). '(\d{4})_(\d{2})_(\d{2})_(\d{2})(\d{2})(\d{2})' .preg_quote(self::BACKUP_FILENAME_SUFFIX, '/'). '$/';
-        $backups = array_filter(array_diff(scandir($this->backupPath), array('..', '.')), function($backup) use ($filenameRegex) {
-            return preg_match($filenameRegex, $backup);
-        });
         $output = [];
 
+        if (! is_dir($this->backupPath)) {
+            return $output;
+        }
+
+        $filenameRegex = '/^' .preg_quote(self::BACKUP_FILENAME_PREFIX, '/'). '(\d{4})_(\d{2})_(\d{2})_(\d{2})(\d{2})(\d{2})' .preg_quote(self::BACKUP_FILENAME_SUFFIX, '/'). '$/';
+        $backups       = array_filter(array_diff(scandir($this->backupPath), array('..', '.')), function($backup) use ($filenameRegex) {
+            return preg_match($filenameRegex, $backup);
+        });
+
         foreach ($backups as $backup) {
-
-            $datetime = preg_replace($filenameRegex, '$1-$2-$3 $4:$5:$6', $backup);
-
-            $data = [
+            $output[] = [
                 'filename'   => $backup,
                 'filepath'   => $this->backupPath . $backup,
-                'created_at' => $datetime,
+                'created_at' => preg_replace($filenameRegex, '$1-$2-$3 $4:$5:$6', $backup)
             ];
-
-            $output[] = $data;
         }
 
         return $output;
@@ -480,8 +507,10 @@ class DotenvEditor
         }
 
         $latestBackup = 0;
+
         foreach ($backups as $backup) {
             $timestamp = strtotime($backup['created_at']);
+
             if ($timestamp > $latestBackup) {
                 $latestBackup = $timestamp;
             }
@@ -511,9 +540,11 @@ class DotenvEditor
     {
         if (is_null($filePath)) {
             $latestBackup = $this->getLatestBackup();
+
             if (is_null($latestBackup)) {
                 throw new NoBackupAvailableException("There are no available backups!");
             }
+
             $filePath = $latestBackup['filepath'];
         }
 
@@ -538,6 +569,7 @@ class DotenvEditor
     {
         if (empty($filePaths)) {
             $allBackups = $this->getBackups();
+
             foreach ($allBackups as $backup) {
                 $filePaths[] = $backup['filepath'];
             }
