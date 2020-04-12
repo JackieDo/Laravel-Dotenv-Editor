@@ -85,7 +85,6 @@ class DotenvWriter implements DotenvWriterContract
     protected function appendLine($text = null)
     {
         $this->buffer .= $text . PHP_EOL;
-
         return $this;
     }
 

@@ -46,6 +46,7 @@ class DotenvReader implements DotenvReaderContract
     public function load($filePath)
     {
         $this->filePath = $filePath;
+
         return $this;
     }
 
@@ -110,6 +111,7 @@ class DotenvReader implements DotenvReaderContract
 
         foreach ($lines as $row => $line) {
             $data = $this->formatter->parseLine($line);
+
             if ($data['type'] == 'setter') {
                 $content[$data['key']] = [
                     'line'    => $row+1,

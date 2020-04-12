@@ -64,20 +64,25 @@ $ composer update
 
 > **Note:** Instead of performing the above two steps, it may be faster to use the command line `$ composer require jackiedo/dotenv-editor:1.*`.
 
-- Once the update operation completes, the third step is to add the service provider. Open `config/app.php`, and add a new item to the providers array:
+Since Laravel 5.5, [service providers and aliases are automatically registered](https://laravel.com/docs/5.5/packages#package-discovery). But if you are using Laravel 5.4 or earlier, you must perform these two steps:
+
+- The third step is to register the service provider. Open `config/app.php`, and add a new item to the providers array:
 
 ```php
 ...
-'providers' => array(
+'providers' => [
     ...
     Jackiedo\DotenvEditor\DotenvEditorServiceProvider::class,
-),
+],
 ```
 
-- The next step is to add the following line to the section `aliases` in the file `config/app.php`:
+- The fourth step is to register the facade. Add the following line to the section `aliases` in the file `config/app.php`:
 
 ```php
-'DotenvEditor' => Jackiedo\DotenvEditor\Facades\DotenvEditor::class,
+'aliases' => [
+    ...
+    'DotenvEditor' => Jackiedo\DotenvEditor\Facades\DotenvEditor::class,
+],
 ```
 
 ## Configuration
@@ -94,6 +99,9 @@ The option `autoBackup` determines if your orignal file will be backed up before
 
 #### Backup location
 The option `backupPath` specifies where your file is backed up to. This value is a sub path (sub-folder) from the root folder of the project application.
+
+#### Always create backup folder
+The option `alwaysCreateBackupFolder` specifies always creating a backup directory, whether or not the backup is performed.
 
 ## Usage
 

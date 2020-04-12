@@ -61,8 +61,7 @@ class DotenvFormatter implements DotenvFormatterContract
         $key         = $this->formatKey($key);
         $comment     = $this->formatComment($comment);
         $export      = $export ? 'export ' : '';
-
-        $line = "{$export}{$key}={$value}{$comment}";
+        $line        = "{$export}{$key}={$value}{$comment}";
 
         return $line;
     }
@@ -109,6 +108,7 @@ class DotenvFormatter implements DotenvFormatterContract
 
         $value = str_replace("\\$quote", $quote, $value);
         $value = str_replace('\\\\', '\\', $value);
+
         return $value;
     }
 
@@ -179,11 +179,10 @@ class DotenvFormatter implements DotenvFormatterContract
                     $value  = preg_replace($regexPattern, '$1', $data);
                     $extant = preg_replace($regexPattern, '$2', $data);
 
-                    $value = $this->normaliseValue($value, $quote);
+                    $value   = $this->normaliseValue($value, $quote);
                     $comment = ($this->isComment($extant)) ? $this->normaliseComment($extant) : '';
                 } else {
                     $parts   = explode(' #', $data, 2);
-
                     $value   = $this->normaliseValue($parts[0]);
                     $comment = (isset($parts[1])) ? $this->normaliseComment($parts[1]) : '';
 
@@ -252,9 +251,11 @@ class DotenvFormatter implements DotenvFormatterContract
     protected function isExportKey($key)
     {
         $pattern = '/^export\h.*$/';
+
         if (preg_match($pattern, trim($key))) {
             return true;
         }
+
         return false;
     }
 
