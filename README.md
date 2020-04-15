@@ -45,25 +45,11 @@ Look at one of the following topics to learn more about Laravel Dotenv Editor
 Currently, only Laravel Dotenv Editor 1.x is compatible with Laravel 5+ and later. This package does not support Laravel 4.2 and earlier versions.
 
 ## Installation
-You can install this package through [Composer](https://getcomposer.org).
-
-- First, edit your project's `composer.json` file to require `jackiedo/dotenv-editor`:
-
-```php
-...
-"require": {
-    ...
-    "jackiedo/dotenv-editor": "1.*"
-},
-```
-
-- Next, run the composer update command in your command line interface:
+You can install this package through [Composer](https://getcomposer.org) with the following command:
 
 ```shell
-$ composer update
+$ composer require jackiedo/dotenv-editor
 ```
-
-> **Note:** Instead of performing the above two steps, it may be faster to use the command line `$ composer require jackiedo/dotenv-editor:1.*`.
 
 Since Laravel 5.5, [service providers and aliases are automatically registered](https://laravel.com/docs/5.5/packages#package-discovery). But if you are using Laravel 5.4 or earlier, you must perform these two steps:
 
