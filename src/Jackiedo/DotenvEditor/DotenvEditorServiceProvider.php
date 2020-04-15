@@ -1,6 +1,7 @@
 <?php namespace Jackiedo\DotenvEditor;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Contracts\Support\DeferrableProvider;
 
 /**
  * DotenvEditorServiceProvider
@@ -8,16 +9,8 @@ use Illuminate\Support\ServiceProvider;
  * @package Jackiedo\DotenvEditor
  * @author Jackie Do <anhvudo@gmail.com>
  */
-class DotenvEditorServiceProvider extends ServiceProvider
+class DotenvEditorServiceProvider extends ServiceProvider implements DeferrableProvider
 {
-
-    /**
-     * Indicates if loading of the provider is deferred.
-     *
-     * @var bool
-     */
-    protected $defer = true;
-
     /**
      * Bootstrap the application events.
      *

@@ -17,14 +17,14 @@ class DotenvEditor
     /**
      * The IoC Container
      *
-     * @var \Illuminate\Container\Container
+     * @var \Illuminate\Contracts\Container\Container
      */
     protected $app;
 
     /**
      * Store instance of Config Repository;
      *
-     * @var \Illuminate\Config\Repository
+     * @var \Illuminate\Contracts\Config\Repository
      */
     protected $config;
 
