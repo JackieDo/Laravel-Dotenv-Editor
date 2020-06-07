@@ -42,32 +42,18 @@ Look at one of the following topics to learn more about Laravel Dotenv Editor
 * [Thanks from author](#thanks-for-use)
 
 ## Versions and compatibility
-Laravel Dotenv Editor is compatible with Laravel 5.8 and later. This package does not support earlier Laravel versions.
+Laravel Dotenv Editor is compatible with Laravel 5.8 and later. This package no longer supports previous versions of Laravel.
 
 ## Installation
-You can install this package through [Composer](https://getcomposer.org).
-
-- First, edit your project's `composer.json` file to require `jackiedo/dotenv-editor`:
-
-```php
-...
-"require": {
-    ...
-    "jackiedo/dotenv-editor": "1.*"
-},
-```
-
-- Next, run the composer update command in your command line interface:
+You can install this package through [Composer](https://getcomposer.org) with the following command:
 
 ```shell
-$ composer update
+$ composer require jackiedo/dotenv-editor
 ```
-
-> **Note:** Instead of performing the above two steps, it may be faster to use the command line `$ composer require jackiedo/dotenv-editor:1.*`.
 
 Since Laravel 5.5, [service providers and aliases are automatically registered](https://laravel.com/docs/5.5/packages#package-discovery), so you can safely skip the following two steps:
 
-- The third step is to register the service provider. Open `config/app.php`, and add a new item to the providers array:
+- The next step is to register the service provider. Open `config/app.php`, and add a new item to the providers array:
 
 ```php
 ...
@@ -77,7 +63,7 @@ Since Laravel 5.5, [service providers and aliases are automatically registered](
 ],
 ```
 
-- The fourth step is to register the facade. Add the following line to the section `aliases` in the file `config/app.php`:
+- The final step is to register the facade. Add the following line to the section `aliases` in the file `config/app.php`:
 
 ```php
 'aliases' => [
