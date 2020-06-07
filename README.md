@@ -255,6 +255,14 @@ Use the `setKeys($data)` method. Example:
         ]
     ]);
 
+Alternatively, you can also provide an associative array of keys and values:
+
+    $file = DotenvEditor::setKeys([
+        'ENV_KEY_1' => 'your-value-1',
+        'ENV_KEY_2' => 'your-value-2',
+        'ENV_KEY_3' => 'your-value-3',
+    ]);
+
 ###### Delete a setter line in buffer
 Use the `deleteKey($key)` method. Example:
 
