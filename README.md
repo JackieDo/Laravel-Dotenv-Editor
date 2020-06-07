@@ -6,7 +6,7 @@
 [![Latest Unstable Version](https://poser.pugx.org/jackiedo/dotenv-editor/v/unstable)](https://packagist.org/packages/jackiedo/dotenv-editor)
 [![License](https://poser.pugx.org/jackiedo/dotenv-editor/license)](https://packagist.org/packages/jackiedo/dotenv-editor)
 
-Laravel Dotenv Editor is the .env file editor (or files with same structure and syntax) for Laravel 5+. Now you can easily edit .env files with the following features:
+Laravel Dotenv Editor is the .env file editor (or files with same structure and syntax) for Laravel 5.8+. Now you can easily edit .env files with the following features:
 
 * Read raw content of file
 * Read lines of file content
@@ -42,7 +42,7 @@ Look at one of the following topics to learn more about Laravel Dotenv Editor
 * [Thanks from author](#thanks-for-use)
 
 ## Versions and compatibility
-Currently, only Laravel Dotenv Editor 1.x is compatible with Laravel 5+ and later. This package does not support Laravel 4.2 and earlier versions.
+Laravel Dotenv Editor is compatible with Laravel 5.8 and later. This package no longer supports previous versions of Laravel.
 
 ## Installation
 You can install this package through [Composer](https://getcomposer.org) with the following command:
@@ -51,9 +51,9 @@ You can install this package through [Composer](https://getcomposer.org) with th
 $ composer require jackiedo/dotenv-editor
 ```
 
-Since Laravel 5.5, [service providers and aliases are automatically registered](https://laravel.com/docs/5.5/packages#package-discovery). But if you are using Laravel 5.4 or earlier, you must perform these two steps:
+Since Laravel 5.5, [service providers and aliases are automatically registered](https://laravel.com/docs/5.5/packages#package-discovery), so you can safely skip the following two steps:
 
-- The third step is to register the service provider. Open `config/app.php`, and add a new item to the providers array:
+- The next step is to register the service provider. Open `config/app.php`, and add a new item to the providers array:
 
 ```php
 ...
@@ -63,7 +63,7 @@ Since Laravel 5.5, [service providers and aliases are automatically registered](
 ],
 ```
 
-- The fourth step is to register the facade. Add the following line to the section `aliases` in the file `config/app.php`:
+- The final step is to register the facade. Add the following line to the section `aliases` in the file `config/app.php`:
 
 ```php
 'aliases' => [
@@ -239,6 +239,14 @@ Use the `setKeys($data)` method. Example:
             'key'     => 'ENV_KEY_3',
             'value'   => 'your-value-3',
         ]
+    ]);
+
+Alternatively, you can also provide an associative array of keys and values:
+
+    $file = DotenvEditor::setKeys([
+        'ENV_KEY_1' => 'your-value-1',
+        'ENV_KEY_2' => 'your-value-2',
+        'ENV_KEY_3' => 'your-value-3',
     ]);
 
 ###### Delete a setter line in buffer

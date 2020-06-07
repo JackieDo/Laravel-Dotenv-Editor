@@ -17,14 +17,14 @@ class DotenvEditor
     /**
      * The IoC Container
      *
-     * @var \Illuminate\Container\Container
+     * @var \Illuminate\Contracts\Container\Container
      */
     protected $app;
 
     /**
      * Store instance of Config Repository;
      *
-     * @var \Illuminate\Config\Repository
+     * @var \Illuminate\Contracts\Config\Repository
      */
     protected $config;
 
@@ -327,7 +327,18 @@ class DotenvEditor
      */
     public function setKeys($data)
     {
-        foreach ($data as $setter) {
+        foreach ($data as $i => $setter) {
+            if (!is_array($setter)) {
+                if (!is_string($i)) {
+                    continue;
+                }
+
+                $setter = [
+                    'key' => $i,
+                    'value' => $setter,
+                ];
+            }
+
             if (array_key_exists('key', $setter)) {
                 $key     = $this->formatter->formatKey($setter['key']);
                 $value   = array_key_exists('value', $setter) ? $setter['value'] : null;
