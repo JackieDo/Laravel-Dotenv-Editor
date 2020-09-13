@@ -22,6 +22,9 @@ Laravel Dotenv Editor is the .env file editor (or files with same structure and 
 # Versions and compatibility
 Laravel Dotenv Editor is compatible with Laravel 5+ and above. Since the release of `1.2.0` onwards, this package only supports Laravel 5.8 and later. Previous versions of Laravel will no longer be supported.
 
+# Note for the release `1.2.0` and later
+Starting with the release `1.2.0`, the .gitignore file in the folder containing the backup file will no longer be created automatically. Developers will have to create this file manually if deemed necessary.
+
 # Documentation
 Look at one of the following topics to learn more about Laravel Dotenv Editor:
 
