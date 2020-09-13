@@ -175,7 +175,6 @@ class DotenvEditor
     {
         if (! is_dir($this->backupPath)) {
             mkdir($this->backupPath, 0777, true);
-            copy(__DIR__ . '/../../stubs/gitignore.txt', $this->backupPath . '../.gitignore');
         }
     }
 
