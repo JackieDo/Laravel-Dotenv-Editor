@@ -162,7 +162,7 @@ class DotenvWriter implements DotenvWriterContract
     public function deleteSetter($key)
     {
         $pattern      = "/^(export\h)?\h*{$key}=.*\n/m";
-        $this->buffer = preg_replace($pattern, null, $this->buffer);
+        $this->buffer = preg_replace($pattern, '', $this->buffer);
 
         return $this;
     }
