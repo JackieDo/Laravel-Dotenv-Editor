@@ -133,17 +133,13 @@ class TestDotenvEditorController extends Controller
 
     public function doSomething()
     {
-        $editor = $this->editor->doSomething();
+        $return = $this->editor->doSomething();
     }
 }
 ```
 
 ### Loading file for working
-By default, Laravel Dotenv Editor will load the `.env` file in the root of your project. Example:
-
-```php
-$content = DotenvEditor::getContent(); // Get raw content of file .env in root folder
-```
+By default, the Laravel Dotenv Editor will load the dotenv file that Laravel is reading from in your project. That is, if your Laravel is using the `.env.local` file to store the configuration values, the Laravel Dotenv Editor also loads the content from that file by default.
 
 However, if you want to explicitly specify the files you are going to work with, you should use the `load()` method.
 
@@ -165,11 +161,11 @@ public function load($filePath = null, $restoreIfNotFound = false, $restorePath 
 **Example:**
 
 ```php
-// Working with file .env in root folder
+// Working with the dotenv file that Laravel is using
 $file = DotenvEditor::load();
 
-// Working with file .env.example in root folder
-$file = DotenvEditor::load('.env.example');
+// Working with file .env.example in root folder of project
+$file = DotenvEditor::load(base_path('.env.example'));
 
 // Working with file .env.backup in folder storage/dotenv-editor/backups/
 $file = DotenvEditor::load(storage_path('dotenv-editor/backups/.env.backup'));
