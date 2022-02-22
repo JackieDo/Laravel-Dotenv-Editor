@@ -17,7 +17,7 @@ class DotenvEditor
     /**
      * The IoC Container
      *
-     * @var \Illuminate\Contracts\Container\Container
+     * @var \Illuminate\Foundation\Application
      */
     protected $app;
 
@@ -99,10 +99,10 @@ class DotenvEditor
         $this->backupPath = $this->config->get('dotenv-editor.backupPath');
 
         if (is_null($this->backupPath)) {
-            if (function_exists('base_path')) {
-                $this->backupPath = base_path('storage/dotenv-editor/backups/');
+            if (method_exists($this->app, 'storagePath')) {
+                $this->backupPath = ($this->app->storagePath() . '/dotenv-editor/backups');
             } else {
-                $this->backupPath = __DIR__.'/../../../../../../storage/dotenv-editor/backups/';
+                $this->backupPath = $this->app->basePath() . '/storage/dotenv-editor/backups';
             }
         }
 
@@ -132,9 +132,9 @@ class DotenvEditor
             $this->filePath = $filePath;
         } else {
             if (method_exists($this->app, 'environmentPath') && method_exists($this->app, 'environmentFile')) {
-                $this->filePath = $this->app->environmentPath().'/'.$this->app->environmentFile();
+                $this->filePath = $this->app->environmentPath() . '/' . $this->app->environmentFile();
             } else {
-                $this->filePath = __DIR__.'/../../../../../../.env';
+                $this->filePath = $this->app->basePath() . '/' . '.env';
             }
         }
 
