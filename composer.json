@@ -15,11 +15,17 @@
         "illuminate/support": "^5.8|^6.0|^7.0|^8.0"
     },
     "autoload": {
+        "files": [
+            "src/helpers.php"
+        ],
         "psr-4": {
-            "Jackiedo\\DotenvEditor\\": "src/Jackiedo/DotenvEditor"
+            "Jackiedo\\DotenvEditor\\": "src"
         }
     },
     "extra": {
+        "branch-alias": {
+            "dev-master": "2.x-dev"
+        },
         "laravel": {
             "providers": [
                 "Jackiedo\\DotenvEditor\\DotenvEditorServiceProvider"
