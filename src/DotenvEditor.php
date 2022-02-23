@@ -112,8 +112,10 @@ class DotenvEditor
     {
         $this->app    = $app;
         $this->config = $config;
+
+        $parser       = $this->selectCompatibleParser();
+        $this->reader = new DotenvReader(new $parser);
         $this->writer = new DotenvWriter(new Formatter);
-        $this->reader = new DotenvReader(new ($this->selectCompatibleParser()));
 
         self::configBackuping();
         $this->load();
