@@ -2,10 +2,9 @@
 
 namespace Jackiedo\DotenvEditor;
 
-use Jackiedo\DotenvEditor\Contracts\DotenvParser;
-use Jackiedo\DotenvEditor\Contracts\DotenvReader as DotenvReaderContract;
+use Jackiedo\DotenvEditor\Contracts\ParserInterface;
+use Jackiedo\DotenvEditor\Contracts\ReaderInterface;
 use Jackiedo\DotenvEditor\Exceptions\UnableReadFileException;
-use Jackiedo\DotenvEditor\Support\Parser;
 
 /**
  * The DotenvReader class.
@@ -13,7 +12,7 @@ use Jackiedo\DotenvEditor\Support\Parser;
  * @package Jackiedo\DotenvEditor
  * @author Jackie Do <anhvudo@gmail.com>
  */
-class DotenvReader implements DotenvReaderContract
+class DotenvReader implements ReaderInterface
 {
     /**
      * The file path
@@ -23,18 +22,18 @@ class DotenvReader implements DotenvReaderContract
     protected $filePath;
 
     /**
-     * Instance of Parser
+     * The instance of Parser
      *
-     * @var Parser
+     * @var \Jackiedo\DotenvEditor\Workers\Parsers\Parser
      */
     protected $parser;
 
     /**
      * Create a new reader instance
      *
-     * @param Parser $parser
+     * @param ParserInterface $parser
      */
-    public function __construct(DotenvParser $parser)
+    public function __construct(ParserInterface $parser)
     {
         $this->parser = $parser;
     }
@@ -42,11 +41,11 @@ class DotenvReader implements DotenvReaderContract
     /**
      * Load file
      *
-     * @param string $filePath
+     * @param string|null $filePath
      *
      * @return DotenvReader
      */
-    public function load($filePath)
+    public function load(?string $filePath)
     {
         $this->filePath = $filePath;
 
@@ -72,7 +71,7 @@ class DotenvReader implements DotenvReaderContract
      *
      * @return array
      */
-    public function entries($withParsedData = false)
+    public function entries(bool $withParsedData = false)
     {
         $entries = $this->getEntriesFromFile();
 

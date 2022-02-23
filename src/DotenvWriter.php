@@ -2,10 +2,9 @@
 
 namespace Jackiedo\DotenvEditor;
 
-use Jackiedo\DotenvEditor\Contracts\DotenvFormatter;
-use Jackiedo\DotenvEditor\Contracts\DotenvWriter as DotenvWriterContract;
+use Jackiedo\DotenvEditor\Contracts\FormatterInterface;
+use Jackiedo\DotenvEditor\Contracts\WriterInterface;
 use Jackiedo\DotenvEditor\Exceptions\UnableWriteToFileException;
-use Jackiedo\DotenvEditor\Support\Formatter;
 
 /**
  * The DotenvWriter writer.
@@ -13,7 +12,7 @@ use Jackiedo\DotenvEditor\Support\Formatter;
  * @package Jackiedo\DotenvEditor
  * @author Jackie Do <anhvudo@gmail.com>
  */
-class DotenvWriter implements DotenvWriterContract
+class DotenvWriter implements WriterInterface
 {
     /**
      * The content buffer
@@ -23,18 +22,18 @@ class DotenvWriter implements DotenvWriterContract
     protected $buffer;
 
     /**
-     * The instance Formatter
+     * The instance of Formatter
      *
-     * @var Formatter
+     * @var \Jackiedo\DotenvEditor\Workers\Formatters\Formatter
      */
     protected $formatter;
 
     /**
      * Create a new writer instance
      *
-     * @param Formatter $formatter
+     * @param FormatterInterface $formatter
      */
-    public function __construct(DotenvFormatter $formatter)
+    public function __construct(FormatterInterface $formatter)
     {
         $this->formatter = $formatter;
     }
@@ -70,7 +69,7 @@ class DotenvWriter implements DotenvWriterContract
      *
      * @return DotenvWriter
      */
-    protected function appendLine($content = null)
+    protected function appendLine(?string $content = null)
     {
         $this->buffer[] = [
             'line'     => null,
@@ -97,7 +96,7 @@ class DotenvWriter implements DotenvWriterContract
      *
      * @return DotenvWriter
      */
-    public function appendCommentLine($comment)
+    public function appendCommentLine(string $comment)
     {
         $content = $this->formatter->formatComment($comment);
 
@@ -114,7 +113,7 @@ class DotenvWriter implements DotenvWriterContract
      *
      * @return DotenvWriter
      */
-    public function appendSetter(string $key, $value = null, $comment = null, $export = false)
+    public function appendSetter(string $key, ?string $value = null, ?string $comment = null, bool $export = false)
     {
         $content = $this->formatter->formatSetter($key, $value, $comment, $export);
 
@@ -131,7 +130,7 @@ class DotenvWriter implements DotenvWriterContract
      *
      * @return DotenvWriter
      */
-    public function updateSetter(string $key, $value = null, $comment = null, $export = false)
+    public function updateSetter(string $key, ?string $value = null, ?string $comment = null, bool $export = false)
     {
         $content = $this->formatter->formatSetter($key, $value, $comment, $export);
         $pattern = "/^(export\h)?\h*{$key}\h*=.*/";
