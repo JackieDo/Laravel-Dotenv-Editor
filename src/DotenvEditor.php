@@ -253,8 +253,8 @@ class DotenvEditor
     {
         $installedDotenvVersion = $this->getDotenvPackageVersion();
 
-        uksort($this->combatibleParserMap, function($behind, $front) {
-            return version_compare($behind, $front) <= 0;
+        uksort($this->combatibleParserMap, function($front, $behind) {
+            return version_compare($behind, $front);
         });
 
         foreach ($this->combatibleParserMap as $minRequiredVersion => $compatibleParser) {
