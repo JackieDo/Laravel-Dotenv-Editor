@@ -51,7 +51,7 @@ class Formatter implements FormatterInterface
         $hasComment  = strlen($comment) > 0;
         $forceQuotes = $hasComment && (strlen($value) == 0);
 
-        if ($forceQuotes || preg_match('/[#\s"\'\\\\]|\\\\n/', $value) === 1) {
+        if ($forceQuotes || preg_match('/[#\s"\'\\\\]|\$\{[a-zA-Z0-9_.]+\}|\\\\n/', $value) === 1) {
             $value = str_replace('\\', '\\\\', $value);
             $value = str_replace('"', '\"', $value);
             $value = "\"{$value}\"";
