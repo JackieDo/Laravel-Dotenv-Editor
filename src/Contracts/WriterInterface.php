@@ -16,7 +16,7 @@ interface WriterInterface
      *
      * @return array|string
      */
-    public function getBuffer(bool $asArray = false);
+    public function getBuffer(bool $asArray = true);
 
     /**
      * Append empty line to buffer.

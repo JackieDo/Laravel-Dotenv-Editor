@@ -275,11 +275,13 @@ class DotenvEditor
     /**
      * Return content in buffer.
      *
+     * @param bool $asArray Use array format for the result
+     *
      * @return array
      */
     public function getBuffer(bool $asArray = true)
     {
-        return $this->writer->getBuffer();
+        return $this->writer->getBuffer($asArray);
     }
 
     /**
@@ -336,10 +338,10 @@ class DotenvEditor
                 $export  = array_key_exists('export', $setter) ? $setter['export'] : null;
 
                 if (!is_file($this->filePath) || !$this->keyExists($key)) {
-                    $this->writer->appendSetter($key, $value, $comment, (bool) $export);
+                    $this->writer->appendSetter($key, $value, (string) $comment, (bool) $export);
                 } else {
                     $oldInfo = $this->getKeys([$key]);
-                    $comment = is_null($comment) ? $oldInfo[$key]['comment'] : $comment;
+                    $comment = is_null($comment) ? $oldInfo[$key]['comment'] : (string) $comment;
                     $export  = is_null($export) ? $oldInfo[$key]['export'] : (bool) $export;
 
                     $this->writer->updateSetter($key, $value, $comment, $export);
@@ -358,11 +360,11 @@ class DotenvEditor
      * @param string      $key     Key name of setter
      * @param null|string $value   Value of setter
      * @param null|string $comment Comment of setter
-     * @param bool        $export  Leading key name by "export "
+     * @param null|bool   $export  Leading key name by "export "
      *
      * @return DotenvEditor
      */
-    public function setKey(string $key, ?string $value = null, ?string $comment = null, bool $export = false)
+    public function setKey(string $key, ?string $value = null, ?string $comment = null, $export = null)
     {
         $data = [compact('key', 'value', 'comment', 'export')];
 

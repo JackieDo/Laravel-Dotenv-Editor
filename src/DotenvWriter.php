@@ -70,7 +70,7 @@ class DotenvWriter implements WriterInterface
      *
      * @return array|string
      */
-    public function getBuffer($asArray = false)
+    public function getBuffer($asArray = true)
     {
         if ($asArray) {
             return $this->buffer;
