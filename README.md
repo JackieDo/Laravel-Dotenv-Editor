@@ -471,7 +471,7 @@ public function setExportSetter(string $key, bool $state = true);
 **Example:**
 
 ```php
-$editor = DotenvEditor::setExportSetter('ENV_KEY', true);
+$editor = DotenvEditor::setExportSetter('ENV_KEY', false);
 ```
 
 #### Delete a setter entry in buffer
