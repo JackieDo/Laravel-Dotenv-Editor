@@ -149,16 +149,6 @@ class DotenvEditor
         return $this;
     }
 
-    /**
-     * Determine if file contents have changed.
-     *
-     * @return bool
-     */
-    public function hasChanged()
-    {
-        return $this->hasChanged;
-    }
-
     /*
     |--------------------------------------------------------------------------
     | Working with reading
@@ -258,6 +248,7 @@ class DotenvEditor
     | Working with writing
     |--------------------------------------------------------------------------
     |
+    | hasChange()
     | getBuffer()
     | addEmpty()
     | addComment()
@@ -271,6 +262,16 @@ class DotenvEditor
     | save()
     |
     */
+
+    /**
+     * Determine if the buffer has changed.
+     *
+     * @return bool
+     */
+    public function hasChanged()
+    {
+        return $this->hasChanged;
+    }
 
     /**
      * Return content in buffer.
@@ -355,7 +356,7 @@ class DotenvEditor
     }
 
     /**
-     * Set one key to buffer.
+     * Set one key to|in the buffer.
      *
      * @param string      $key     Key name of setter
      * @param null|string $value   Value of setter
@@ -374,6 +375,9 @@ class DotenvEditor
     /**
      * Set the comment for setter.
      *
+     * @param string      $key     Key name of setter
+     * @param null|string $comment The comment content
+     *
      * @return DotenvEditor
      */
     public function setSetterComment(string $key, ?string $comment = null)
@@ -388,6 +392,8 @@ class DotenvEditor
     /**
      * Clear the comment for setter.
      *
+     * @param string $key Key name of setter
+     *
      * @return DotenvEditor
      */
     public function clearSetterComment(string $key)
@@ -397,6 +403,9 @@ class DotenvEditor
 
     /**
      * Set the export status for setter.
+     *
+     * @param string $key   Key name of setter
+     * @param bool   $state Leading key name by "export "
      *
      * @return DotenvEditor
      */
@@ -439,6 +448,8 @@ class DotenvEditor
 
     /**
      * Save buffer to file.
+     *
+     * @param bool $rebuildBuffer Rebuild buffer from content of dotenv file
      *
      * @return DotenvEditor
      */
