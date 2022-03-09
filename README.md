@@ -298,7 +298,7 @@ public function getValue($key);
 $value = DotenvEditor::getValue('APP_URL');
 ```
 
-### Writing content into a file
+### Writing content into file
 To edit file content, you have two jobs:
 
 - First is writing content into the buffer.
