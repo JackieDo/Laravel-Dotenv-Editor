@@ -11,15 +11,15 @@ Laravel Dotenv Editor is the .env file editor (or files with same structure and 
 - Read raw content of file.
 - Read entries of file content.
 - Read setters (key-value-pair) in file content.
-- Determine one key name of existing setter.
-- Append empty lines to file.
-- Append comment lines to file.
-- Append new or update exists setter entry.
-- Update comment of the existing setter entry.
-- Update export status of the existing setter entry.
-- Delete existing setter line in file.
-- Backup and restore file.
-- Manage backup files.
+- Check for existence of setter.
+- Append empty lines to file content.
+- Append comment lines to file content.
+- Append new or update an existing setter entry.
+- Update comment of an existing setter entry.
+- Update export status of an existing setter entry.
+- Delete existing setter entry in file content.
+- Backup and restore file content.
+- Manage backuped files.
 
 # Versions and compatibility
 Laravel Dotenv Editor is compatible with Laravel 5.8 and later.
