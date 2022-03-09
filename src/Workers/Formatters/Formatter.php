@@ -9,15 +9,15 @@ use Jackiedo\DotenvEditor\Exceptions\InvalidKeyException;
  * The .env formatter.
  *
  * @package Jackiedo\DotenvEditor
+ *
  * @author Jackie Do <anhvudo@gmail.com>
  */
 class Formatter implements FormatterInterface
 {
     /**
-     * Formatting the key of setter to writing
+     * Formatting the key of setter to writing.
      *
-     * @param string  $key
-     * @param boolean $export  optional
+     * @param bool $export optional
      *
      * @return string
      */
@@ -37,52 +37,24 @@ class Formatter implements FormatterInterface
     }
 
     /**
-     * Formatting the value of setter to writing
-     *
-     * @param string|null $value
-     * @param string|null $comment  optional
-     *
-     * @return string
-     */
-    public function formatValue(?string $value, ?string $comment = null)
-    {
-        $value       = (string) $value;
-        $comment     = (string) $comment;
-        $hasComment  = strlen($comment) > 0;
-        $forceQuotes = $hasComment && (strlen($value) == 0);
-
-        if ($forceQuotes || preg_match('/[#\s"\'\\\\]|\$\{[a-zA-Z0-9_.]+\}|\\\\n/', $value) === 1) {
-            $value = str_replace('\\', '\\\\', $value);
-            $value = str_replace('"', '\"', $value);
-            $value = "\"{$value}\"";
-        }
-
-        $value = $value . ($hasComment ? " {$comment}" : "");
-
-        return $value;
-    }
-
-    /**
-     * Formatting the comment to writing
-     *
-     * @param string|null $comment
+     * Formatting the comment to writing.
      *
      * @return string
      */
     public function formatComment(?string $comment)
     {
         $comment = rtrim(ltrim((string) $comment, '# '), ' ');
+        $comment = preg_replace('/(\r\n|\n|\r)/', ' ', $comment);
 
-        return (strlen($comment) > 0) ? "# {$comment}" : "";
+        return (strlen($comment) > 0) ? "# {$comment}" : '';
     }
 
     /**
-     * Build an setter from the individual components for writing
+     * Build an setter from the individual components for writing.
      *
-     * @param string       $key
-     * @param string|null  $value
-     * @param string|null  $comment  optional
-     * @param boolean      $export   optional
+     * @param null|string $value   optional
+     * @param null|string $comment optional
+     * @param bool        $export  optional
      *
      * @return string
      */
@@ -95,14 +67,36 @@ class Formatter implements FormatterInterface
     }
 
     /**
-     * Determine if the input string is valid key
+     * Formatting the value of setter to writing.
      *
-     * @param string $key
+     * @param string      $value   optional
+     * @param null|string $comment optional
      *
-     * @return boolean
+     * @return string
+     */
+    protected function formatValue(?string $value, ?string $comment = null)
+    {
+        $value       = (string) $value;
+        $comment     = (string) $comment;
+        $hasComment  = strlen($comment) > 0;
+        $forceQuotes = $hasComment && (0 == strlen($value));
+
+        if ($forceQuotes || 1 === preg_match('/[#\s"\'\\\\]|\$\{[a-zA-Z0-9_.]+\}|\\\\n/', $value)) {
+            $value = str_replace('\\', '\\\\', $value);
+            $value = str_replace('"', '\"', $value);
+            $value = "\"{$value}\"";
+        }
+
+        return $value . ($hasComment ? " {$comment}" : '');
+    }
+
+    /**
+     * Determine if the input string is valid key.
+     *
+     * @return bool
      */
     protected function isValidKey(string $key)
     {
-        return preg_match('/\A[a-zA-Z0-9_.]+\z/', $key) === 1;
+        return 1 === preg_match('/\A[a-zA-Z0-9_.]+\z/', $key);
     }
 }

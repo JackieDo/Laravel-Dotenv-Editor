@@ -4,7 +4,6 @@ namespace Jackiedo\DotenvEditor\Console\Commands;
 
 use Illuminate\Console\Command;
 use Jackiedo\DotenvEditor\Console\Traits\CreateCommandInstanceTrait;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
 class DotenvBackupCommand extends Command
@@ -26,11 +25,11 @@ class DotenvBackupCommand extends Command
     protected $description = 'Backup the .env file';
 
     /**
-     * The .env file path
+     * The .env file path.
      *
-     * @var string|null
+     * @var null|string
      */
-    protected $filePath = null;
+    protected $filePath;
 
     /**
      * Execute the console command.
@@ -50,9 +49,9 @@ class DotenvBackupCommand extends Command
     }
 
     /**
-     * Convert string to corresponding type
+     * Convert string to corresponding type.
      *
-     * @param  string $string
+     * @param string $string
      *
      * @return mixed
      */
@@ -60,15 +59,15 @@ class DotenvBackupCommand extends Command
     {
         if (is_string($string)) {
             switch (true) {
-                case ($string == 'null' || $string == 'NULL'):
+                case 'null' == $string || 'NULL' == $string:
                     $string = null;
                     break;
 
-                case ($string == 'true' || $string == 'TRUE'):
+                case 'true' == $string || 'TRUE' == $string:
                     $string = true;
                     break;
 
-                case ($string == 'false' || $string == 'FALSE'):
+                case 'false' == $string || 'FALSE' == $string:
                     $string = false;
                     break;
 
@@ -98,7 +97,7 @@ class DotenvBackupCommand extends Command
     protected function getOptions()
     {
         return [
-            array('filepath', null, InputOption::VALUE_OPTIONAL, 'The file path will be backed up. Do not use if you want to backup file .env at root application folder.')
+            ['filepath', null, InputOption::VALUE_OPTIONAL, 'The file path will be backed up. Do not use if you want to backup file .env at root application folder.'],
         ];
     }
 }

@@ -4,7 +4,6 @@ namespace Jackiedo\DotenvEditor\Console\Commands;
 
 use Illuminate\Console\Command;
 use Jackiedo\DotenvEditor\Console\Traits\CreateCommandInstanceTrait;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
 class DotenvGetBackupsCommand extends Command
@@ -37,7 +36,8 @@ class DotenvGetBackupsCommand extends Command
 
         if ($this->option('latest')) {
             $latest = $this->editor->getLatestBackup();
-            if (! is_null($latest)) {
+
+            if (!is_null($latest)) {
                 $backups = [$latest];
                 $total = 1;
             } else {
@@ -51,12 +51,12 @@ class DotenvGetBackupsCommand extends Command
         $this->line('Loading backup files...');
         $this->line('');
 
-        if ($total == 0) {
-            $this->info("You have not any backup file");
-        } elseif ($total == 1) {
+        if (0 == $total) {
+            $this->info('You have not any backup file');
+        } elseif (1 == $total) {
             $this->table($headers, $backups);
             $this->line('');
-            $this->info("There is 1 backup file found from your request");
+            $this->info('There is 1 backup file found from your request');
         } else {
             $this->table($headers, $backups);
             $this->line('');
@@ -82,7 +82,7 @@ class DotenvGetBackupsCommand extends Command
     protected function getOptions()
     {
         return [
-            array('latest', 'l', InputOption::VALUE_NONE, 'Only get latest version from backup files.')
+            ['latest', 'l', InputOption::VALUE_NONE, 'Only get latest version from backup files.'],
         ];
     }
 }

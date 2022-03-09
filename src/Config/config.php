@@ -1,7 +1,6 @@
 <?php
 
-return array(
-
+return [
     /*
     |----------------------------------------------------------------------
     | Auto backup mode
@@ -34,6 +33,5 @@ return array(
     | backup is performed or not.
     */
 
-    'alwaysCreateBackupFolder' => false
-
-);
+    'alwaysCreateBackupFolder' => false,
+];

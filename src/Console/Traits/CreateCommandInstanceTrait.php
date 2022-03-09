@@ -7,7 +7,7 @@ use Jackiedo\DotenvEditor\DotenvEditor;
 trait CreateCommandInstanceTrait
 {
     /**
-     * The .env file editor instance
+     * The .env file editor instance.
      *
      * @var DotenvEditor
      */
@@ -15,8 +15,6 @@ trait CreateCommandInstanceTrait
 
     /**
      * Create a new command instance.
-     *
-     * @param DotenvEditor $editor
      */
     public function __construct(DotenvEditor $editor)
     {
@@ -27,7 +25,7 @@ trait CreateCommandInstanceTrait
 
     /**
      * Execute the console command.
-     * This is alias of the method fire()
+     * This is alias of the method fire().
      *
      * @return mixed
      */

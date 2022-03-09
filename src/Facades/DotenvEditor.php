@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Facade;
  * The DotenvEditor facade.
  *
  * @package Jackiedo\DotenvEditor\Facades
+ *
  * @author Jackie Do <anhvudo@gmail.com>
  */
 class DotenvEditor extends Facade

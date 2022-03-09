@@ -9,6 +9,7 @@ use Jackiedo\DotenvEditor\Exceptions\InvalidValueException;
  * The reader parser V3 class.
  *
  * @package Jackiedo\DotenvEditor
+ *
  * @author Jackie Do <anhvudo@gmail.com>
  */
 class ParserV3 extends Parser implements ParserInterface
@@ -22,16 +23,17 @@ class ParserV3 extends Parser implements ParserInterface
     private const COMMENT_STATE         = 6;
 
     /**
-     * Parse setter data into array of value, comment information
+     * Parse setter data into array of value, comment information.
      *
      * @param string $data
+     *
      * @throws InvalidValueException
      *
      * @return array
      */
     protected function parseSetterData($data)
     {
-        if ($data === null || trim($data) === '') {
+        if (null === $data || '' === trim($data)) {
             return ['', ''];
         }
 
@@ -41,78 +43,98 @@ class ParserV3 extends Parser implements ParserInterface
         $result = array_reduce($dataChars, function ($parseInfo, $char) use ($data) {
             switch ($parseInfo[2]) {
                 case self::INITIAL_STATE:
-                    if ($char === '\'') {
+                    if ('\'' === $char) {
                         return [$parseInfo[0], $parseInfo[1], self::SINGLE_QUOTED_STATE];
-                    } elseif ($char === '"') {
-                        return [$parseInfo[0], $parseInfo[1], self::DOUBLE_QUOTED_STATE];
-                    } elseif ($char === '#') {
-                        return [$parseInfo[0], $parseInfo[1], self::COMMENT_STATE];
-                    } elseif ($char === '$') {
-                        return [$parseInfo[0].$char, $parseInfo[1], self::UNQUOTED_STATE];
-                    } else {
-                        return [$parseInfo[0].$char, $parseInfo[1], self::UNQUOTED_STATE];
                     }
+
+                    if ('"' === $char) {
+                        return [$parseInfo[0], $parseInfo[1], self::DOUBLE_QUOTED_STATE];
+                    }
+
+                    if ('#' === $char) {
+                        return [$parseInfo[0], $parseInfo[1], self::COMMENT_STATE];
+                    }
+
+                    if ('$' === $char) {
+                        return [$parseInfo[0] . $char, $parseInfo[1], self::UNQUOTED_STATE];
+                    }
+
+                        return [$parseInfo[0] . $char, $parseInfo[1], self::UNQUOTED_STATE];
 
                 case self::UNQUOTED_STATE:
-                    if ($char === '#') {
+                    if ('#' === $char) {
                         return [$parseInfo[0], $parseInfo[1], self::COMMENT_STATE];
-                    } elseif (ctype_space($char)) {
-                        return [$parseInfo[0], $parseInfo[1], self::WHITESPACE_STATE];
-                    } elseif ($char === '$') {
-                        return [$parseInfo[0].$char, $parseInfo[1], self::UNQUOTED_STATE];
-                    } else {
-                        return [$parseInfo[0].$char, $parseInfo[1], self::UNQUOTED_STATE];
                     }
+
+                    if (ctype_space($char)) {
+                        return [$parseInfo[0], $parseInfo[1], self::WHITESPACE_STATE];
+                    }
+
+                    if ('$' === $char) {
+                        return [$parseInfo[0] . $char, $parseInfo[1], self::UNQUOTED_STATE];
+                    }
+
+                        return [$parseInfo[0] . $char, $parseInfo[1], self::UNQUOTED_STATE];
 
                 case self::SINGLE_QUOTED_STATE:
-                    if ($char === '\'') {
+                    if ('\'' === $char) {
                         return [$parseInfo[0], $parseInfo[1], self::WHITESPACE_STATE];
-                    } else {
-                        return [$parseInfo[0].$char, $parseInfo[1], self::SINGLE_QUOTED_STATE];
                     }
+
+                        return [$parseInfo[0] . $char, $parseInfo[1], self::SINGLE_QUOTED_STATE];
 
                 case self::DOUBLE_QUOTED_STATE:
-                    if ($char === '"') {
+                    if ('"' === $char) {
                         return [$parseInfo[0], $parseInfo[1], self::WHITESPACE_STATE];
-                    } elseif ($char === '\\') {
-                        return [$parseInfo[0], $parseInfo[1], self::ESCAPE_SEQUENCE_STATE];
-                    } elseif ($char === '$') {
-                        return [$parseInfo[0].$char, $parseInfo[1], self::DOUBLE_QUOTED_STATE];
-                    } else {
-                        return [$parseInfo[0].$char, $parseInfo[1], self::DOUBLE_QUOTED_STATE];
                     }
+
+                    if ('\\' === $char) {
+                        return [$parseInfo[0], $parseInfo[1], self::ESCAPE_SEQUENCE_STATE];
+                    }
+
+                    if ('$' === $char) {
+                        return [$parseInfo[0] . $char, $parseInfo[1], self::DOUBLE_QUOTED_STATE];
+                    }
+
+                        return [$parseInfo[0] . $char, $parseInfo[1], self::DOUBLE_QUOTED_STATE];
 
                 case self::ESCAPE_SEQUENCE_STATE:
-                    if ($char === '"' || $char === '\\') {
-                        return [$parseInfo[0].$char, $parseInfo[1], self::DOUBLE_QUOTED_STATE];
-                    } elseif ($char === '$') {
-                        return [$parseInfo[0].$char, $parseInfo[1], self::DOUBLE_QUOTED_STATE];
-                    } elseif (in_array($char, ['f', 'n', 'r', 't', 'v'], true)) {
+                    if ('"' === $char || '\\' === $char) {
+                        return [$parseInfo[0] . $char, $parseInfo[1], self::DOUBLE_QUOTED_STATE];
+                    }
+
+                    if ('$' === $char) {
+                        return [$parseInfo[0] . $char, $parseInfo[1], self::DOUBLE_QUOTED_STATE];
+                    }
+
+                    if (in_array($char, ['f', 'n', 'r', 't', 'v'], true)) {
                         $first = $this->UTF8Substr($char, 0, 1);
 
-                        return [$parseInfo[0].stripcslashes('\\'.$first).$this->UTF8Substr($char, 1), $parseInfo[1], self::DOUBLE_QUOTED_STATE];
-                    } else {
-                        throw new InvalidValueException(self::getErrorMessage('an unexpected escape sequence', $data));
+                        return [$parseInfo[0] . stripcslashes('\\' . $first) . $this->UTF8Substr($char, 1), $parseInfo[1], self::DOUBLE_QUOTED_STATE];
                     }
+
+                        throw new InvalidValueException(self::getErrorMessage('an unexpected escape sequence', $data));
 
                 case self::WHITESPACE_STATE:
-                    if ($char === '#') {
+                    if ('#' === $char) {
                         return [$parseInfo[0], $parseInfo[1], self::COMMENT_STATE];
-                    } elseif (!ctype_space($char)) {
-                        throw new InvalidValueException(self::getErrorMessage('unexpected whitespace', $data));
-                    } else {
-                        return [$parseInfo[0], $parseInfo[1], self::WHITESPACE_STATE];
                     }
 
+                    if (!ctype_space($char)) {
+                        throw new InvalidValueException(self::getErrorMessage('unexpected whitespace', $data));
+                    }
+
+                        return [$parseInfo[0], $parseInfo[1], self::WHITESPACE_STATE];
+
                 case self::COMMENT_STATE:
-                    return [$parseInfo[0], $parseInfo[1].$char, self::COMMENT_STATE];
+                    return [$parseInfo[0], $parseInfo[1] . $char, self::COMMENT_STATE];
             }
         }, $parseInfoInit);
 
         if (in_array($result[2], [
             self::SINGLE_QUOTED_STATE,
             self::DOUBLE_QUOTED_STATE,
-            self::ESCAPE_SEQUENCE_STATE
+            self::ESCAPE_SEQUENCE_STATE,
         ], true)) {
             throw new InvalidValueException(self::getErrorMessage('a missing closing quote', $data));
         }
@@ -122,10 +144,6 @@ class ParserV3 extends Parser implements ParserInterface
 
     /**
      * Grab the specified substring of the input.
-     *
-     * @param string   $input
-     * @param int      $start
-     * @param int|null $length
      *
      * @return string
      */

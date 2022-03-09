@@ -5,12 +5,12 @@ namespace Jackiedo\DotenvEditor\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Console\ConfirmableTrait;
 use Jackiedo\DotenvEditor\Console\Traits\CreateCommandInstanceTrait;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
 class DotenvRestoreCommand extends Command
 {
-    use ConfirmableTrait, CreateCommandInstanceTrait;
+    use ConfirmableTrait;
+    use CreateCommandInstanceTrait;
 
     /**
      * The name and signature of the console command.
@@ -27,18 +27,18 @@ class DotenvRestoreCommand extends Command
     protected $description = 'Restore the .env file from backup or special file';
 
     /**
-     * The .env file path
+     * The .env file path.
      *
-     * @var string|null
+     * @var null|string
      */
-    protected $filePath = null;
+    protected $filePath;
 
     /**
-     * The file path should use to restore
+     * The file path should use to restore.
      *
-     * @var string|null
+     * @var null|string
      */
-    protected $retorePath = null;
+    protected $retorePath;
 
     /**
      * Execute the console command.
@@ -49,17 +49,17 @@ class DotenvRestoreCommand extends Command
     {
         $this->transferInputsToProperties();
 
-        if (! $this->confirmToProceed()) {
+        if (!$this->confirmToProceed()) {
             return false;
         }
 
         $this->line('Restoring your file...');
         $this->editor->load($this->filePath)->restore($this->restorePath);
-        $this->info("Your file is restored successfully");
+        $this->info('Your file is restored successfully');
     }
 
     /**
-     * Transfer inputs to properties of editing
+     * Transfer inputs to properties of editing.
      *
      * @return void
      */
@@ -73,9 +73,9 @@ class DotenvRestoreCommand extends Command
     }
 
     /**
-     * Convert string to corresponding type
+     * Convert string to corresponding type.
      *
-     * @param  string $string
+     * @param string $string
      *
      * @return mixed
      */
@@ -83,15 +83,15 @@ class DotenvRestoreCommand extends Command
     {
         if (is_string($string)) {
             switch (true) {
-                case ($string == 'null' || $string == 'NULL'):
+                case 'null' == $string || 'NULL' == $string:
                     $string = null;
                     break;
 
-                case ($string == 'true' || $string == 'TRUE'):
+                case 'true' == $string || 'TRUE' == $string:
                     $string = true;
                     break;
 
-                case ($string == 'false' || $string == 'FALSE'):
+                case 'false' == $string || 'FALSE' == $string:
                     $string = false;
                     break;
 
@@ -121,9 +121,9 @@ class DotenvRestoreCommand extends Command
     protected function getOptions()
     {
         return [
-            array('filepath', null, InputOption::VALUE_OPTIONAL, 'The .env file path will be restored. Do not use if you want to restore file .env at root application folder.'),
-            array('restore-path', null, InputOption::VALUE_OPTIONAL, 'The special file path should use to restore. Do not use if you want to restore from latest backup file.'),
-            array('force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.')
+            ['filepath', null, InputOption::VALUE_OPTIONAL, 'The .env file path will be restored. Do not use if you want to restore file .env at root application folder.'],
+            ['restore-path', null, InputOption::VALUE_OPTIONAL, 'The special file path should use to restore. Do not use if you want to restore from latest backup file.'],
+            ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
         ];
     }
 }

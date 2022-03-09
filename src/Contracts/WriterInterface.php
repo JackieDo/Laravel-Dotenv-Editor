@@ -5,62 +5,46 @@ namespace Jackiedo\DotenvEditor\Contracts;
 interface WriterInterface
 {
     /**
-     * Load current content into buffer
-     *
-     * @param array $content
+     * Load current content into buffer.
      */
     public function setBuffer(array $content);
 
     /**
-     * Return content in buffer
-     */
-    public function getBuffer();
-
-    /**
-     * Append empty line to buffer
-     */
-    public function appendEmptyLine();
-
-    /**
-     * Append comment line to buffer
+     * Return content in buffer.
      *
-     * @param  string $comment
+     * @param bool $asArray Use array format for the result
+     *
+     * @return array|string
      */
-    public function appendCommentLine(string $comment);
+    public function getBuffer(bool $asArray = false);
 
     /**
-     * Append one setter to buffer
-     *
-     * @param  string		$key
-     * @param  string|null	$value
-     * @param  string|null	$comment
-     * @param  boolean		$export
+     * Append empty line to buffer.
+     */
+    public function appendEmpty();
+
+    /**
+     * Append comment line to buffer.
+     */
+    public function appendComment(string $comment);
+
+    /**
+     * Append one setter to buffer.
      */
     public function appendSetter(string $key, ?string $value = null, ?string $comment = null, bool $export = false);
 
     /**
-     * Update one setter in buffer
-     *
-     * @param  string		$key
-     * @param  string|null	$value
-     * @param  string|null	$comment
-     * @param  boolean		$export
+     * Update one setter in buffer.
      */
     public function updateSetter(string $key, ?string $value = null, ?string $comment = null, bool $export = false);
 
     /**
-     * Delete one setter in buffer
-     *
-     * @param  string $key
-     *
-     * @return object
+     * Delete one setter in buffer.
      */
     public function deleteSetter(string $key);
 
     /**
-     * Save buffer to special file path
-     *
-     * @param  string $filePath
+     * Save buffer to special file.
      */
-    public function save(string $filePath);
+    public function saveTo(string $filePath);
 }

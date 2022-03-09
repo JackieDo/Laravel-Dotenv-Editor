@@ -2,8 +2,8 @@
 
 namespace Jackiedo\DotenvEditor;
 
-use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Config\Repository as Config;
+use Illuminate\Contracts\Container\Container;
 use Jackiedo\DotenvEditor\Exceptions\FileNotFoundException;
 use Jackiedo\DotenvEditor\Exceptions\KeyNotFoundException;
 use Jackiedo\DotenvEditor\Exceptions\NoBackupAvailableException;
@@ -16,19 +16,30 @@ use Jackiedo\DotenvEditor\Workers\Parsers\ParserV3;
  * The DotenvEditor class.
  *
  * @package Jackiedo\DotenvEditor
+ *
  * @author Jackie Do <anhvudo@gmail.com>
  */
 class DotenvEditor
 {
     /**
-     * The IoC Container
+     * The backup filename prefix.
+     */
+    public const BACKUP_FILENAME_PREFIX = '.env.backup_';
+
+    /**
+     * The backup filename suffix.
+     */
+    public const BACKUP_FILENAME_SUFFIX = '';
+
+    /**
+     * The IoC Container.
      *
      * @var \Illuminate\Foundation\Application
      */
     protected $app;
 
     /**
-     * Store instance of Config Repository;
+     * Store instance of Config Repository;.
      *
      * @var Config
      */
@@ -45,66 +56,53 @@ class DotenvEditor
     protected $combatibleParserMap = [
         '5.0.0' => ParserV3::class,  // Laravel 8.x|9.x using "vlucas/dotenv" ^v5.0|^5.4
         '4.0.0' => ParserV2::class,  // Laravel 7.x using "vlucas/dotenv" ^v4.0
-        '3.3.0' => ParserV1::class   // Laravel 5.8 and 6.x using "vlucas/dotenv" ^v3.3
+        '3.3.0' => ParserV1::class,   // Laravel 5.8 and 6.x using "vlucas/dotenv" ^v3.3
     ];
 
     /**
-     * The reader instance
+     * The reader instance.
      *
      * @var DotenvReader
      */
     protected $reader;
 
     /**
-     * The writer instance
+     * The writer instance.
      *
      * @var DotenvWriter
      */
     protected $writer;
 
     /**
-     * The file path
+     * The file path.
      *
      * @var string
      */
     protected $filePath;
 
     /**
-     * The auto backup status
+     * The auto backup status.
      *
-     * @var boolean
+     * @var bool
      */
     protected $autoBackup;
 
     /**
-     * The backup path
+     * The backup path.
      *
      * @var string
      */
     protected $backupPath;
 
     /**
-     * The changed state of buffer
+     * The changed state of buffer.
      *
-     * @var boolean
+     * @var bool
      */
     protected $hasChanged;
 
     /**
-     * The backup filename prefix
-     */
-    const BACKUP_FILENAME_PREFIX = '.env.backup_';
-
-    /**
-     * The backup filename suffix
-     */
-    const BACKUP_FILENAME_SUFFIX = '';
-
-    /**
-     * Create a new DotenvEditor instance
-     *
-     * @param  Container  $app
-     * @param  Config     $config
+     * Create a new DotenvEditor instance.
      *
      * @return void
      */
@@ -122,11 +120,11 @@ class DotenvEditor
     }
 
     /**
-     * Load file for working
+     * Load file for working.
      *
-     * @param  string|null  $filePath           The file path
-     * @param  boolean      $restoreIfNotFound  Restore this file from other file if it's not found
-     * @param  string|null  $restorePath        The file path you want to restore from
+     * @param null|string $filePath          The file path
+     * @param bool        $restoreIfNotFound Restore this file from other file if it's not found
+     * @param null|string $restorePath       The file path you want to restore from
      *
      * @return DotenvEditor
      */
@@ -154,132 +152,11 @@ class DotenvEditor
     /**
      * Determine if file contents have changed.
      *
-     * @return boolean
+     * @return bool
      */
     public function hasChanged()
     {
         return $this->hasChanged;
-    }
-
-    /**
-     * Initialize content for editor
-     *
-     * @return void
-     */
-    protected function init()
-    {
-        $this->hasChanged = false;
-        $this->filePath = null;
-
-        $this->reader->load(null);
-        $this->writer->setBuffer([]);
-    }
-
-    /**
-     * Standardize the file path
-     *
-     * @param string|null $filePath
-     *
-     * @return string
-     */
-    protected function standardizeFilePath(?string $filePath = null)
-    {
-        if (is_null($filePath)) {
-            if (method_exists($this->app, 'environmentPath') && method_exists($this->app, 'environmentFile')) {
-                $filePath = restyle_path($this->app->environmentPath() . '/' . $this->app->environmentFile());
-            } else {
-                $filePath = restyle_path($this->app->basePath() . '/' . '.env');
-            }
-        }
-
-        return $filePath;
-    }
-
-    /**
-     * Build buffer for writer
-     *
-     * @return void
-     */
-    protected function buildBuffer()
-    {
-        $this->writer->setBuffer($this->getEntries(false));
-
-        $this->hasChanged = false;
-    }
-
-    /**
-     * Create backup folder if not exists
-     *
-     * @return void
-     */
-    protected function createBackupFolder()
-    {
-        if (! is_dir($this->backupPath)) {
-            mkdir($this->backupPath, 0777, true);
-        }
-    }
-
-    /**
-     * Config settings for backuping
-     *
-     * @return void
-     */
-    protected function configBackuping()
-    {
-        $this->autoBackup = $this->config->get('dotenv-editor.autoBackup', true);
-        $this->backupPath = $this->config->get('dotenv-editor.backupPath');
-
-        if (is_null($this->backupPath)) {
-            if (method_exists($this->app, 'storagePath')) {
-                $this->backupPath = ($this->app->storagePath() . '/dotenv-editor/backups');
-            } else {
-                $this->backupPath = $this->app->basePath() . '/storage/dotenv-editor/backups';
-            }
-        }
-
-        $this->backupPath = restyle_path(rtrim($this->backupPath, '\\/') . '/');
-
-        if ($this->config->get('dotenv-editor.alwaysCreateBackupFolder', false)) {
-            $this->createBackupFolder();
-        }
-    }
-
-    /**
-     * Select the parser compatible with the "vlucas/phpdotenv" package
-     *
-     * @return string
-     */
-    protected function selectCompatibleParser()
-    {
-        $installedDotenvVersion = $this->getDotenvPackageVersion();
-
-        uksort($this->combatibleParserMap, function($front, $behind) {
-            return version_compare($behind, $front);
-        });
-
-        foreach ($this->combatibleParserMap as $minRequiredVersion => $compatibleParser) {
-            if (version_compare($installedDotenvVersion, $minRequiredVersion) >= 0) {
-                return $compatibleParser;
-            }
-        }
-
-        return ParserV1::class;
-    }
-
-    /**
-     * Catch version of the "vlucas/phpdotenv" package
-     *
-     * @return string
-     */
-    protected function getDotenvPackageVersion()
-    {
-        $composerLock  = $this->app->basePath() . DIRECTORY_SEPARATOR . 'composer.lock';
-        $arrayContent  = json_decode(file_get_contents($composerLock), true);
-        $dotenvPackage = array_values(array_filter($arrayContent['packages'], function ($packageInfo, $index) {
-            return $packageInfo['name'] === "vlucas/phpdotenv";
-        }, ARRAY_FILTER_USE_BOTH))[0];
-
-        return preg_replace('/[a-zA-Z]/', '', $dotenvPackage['version']);
     }
 
     /*
@@ -297,7 +174,7 @@ class DotenvEditor
     */
 
     /**
-     * Get raw content of file
+     * Get raw content of file.
      *
      * @return string
      */
@@ -307,9 +184,7 @@ class DotenvEditor
     }
 
     /**
-     * Get all entries from file
-     *
-     * @param boolean $withParsedData
+     * Get all entries from file.
      *
      * @return array
      */
@@ -319,9 +194,7 @@ class DotenvEditor
     }
 
     /**
-     * Get all or exists given keys in file content
-     *
-     * @param array $keys
+     * Get all or exists given keys in file content.
      *
      * @return array
      */
@@ -329,19 +202,17 @@ class DotenvEditor
     {
         $allKeys = $this->reader->keys();
 
-        return array_filter($allKeys, function ($key) use ($keys) {
-            if (!empty($keys)) {
-                return in_array($key, $keys);
-            }
+        if (empty($keys)) {
+            return $allKeys;
+        }
 
-            return true;
+        return array_filter($allKeys, function ($key) use ($keys) {
+            return in_array($key, $keys);
         }, ARRAY_FILTER_USE_KEY);
     }
 
     /**
-     * Return information of entry matching to a given key in the file content
-     *
-     * @param string $key
+     * Return information of entry matching to a given key in the file content.
      *
      * @throws KeyNotFoundException
      *
@@ -359,9 +230,7 @@ class DotenvEditor
     }
 
     /**
-     * Return the value matching to a given key in the file content
-     *
-     * @param string $key
+     * Return the value matching to a given key in the file content.
      *
      * @return string
      */
@@ -371,11 +240,11 @@ class DotenvEditor
     }
 
     /**
-     * Check, if a given key is exists in the file content
+     * Check, if a given key is exists in the file content.
      *
-     * @param  string  $keys
+     * @param string $keys
      *
-     * @return boolean
+     * @return bool
      */
     public function keyExists(string $key)
     {
@@ -394,6 +263,9 @@ class DotenvEditor
     | addComment()
     | setKeys()
     | setKey()
+    | setSetterComment()
+    | clearSetterComment()
+    | setExportSetter()
     | deleteKeys()
     | deleteKey()
     | save()
@@ -401,23 +273,23 @@ class DotenvEditor
     */
 
     /**
-     * Return content in buffer
+     * Return content in buffer.
      *
      * @return array
      */
-    public function getBuffer()
+    public function getBuffer(bool $asArray = true)
     {
         return $this->writer->getBuffer();
     }
 
     /**
-     * Add empty line to buffer
+     * Add empty line to buffer.
      *
      * @return DotenvEditor
      */
     public function addEmpty()
     {
-        $this->writer->appendEmptyLine();
+        $this->writer->appendEmpty();
 
         $this->hasChanged = true;
 
@@ -425,15 +297,13 @@ class DotenvEditor
     }
 
     /**
-     * Add comment line to buffer
-     *
-     * @param string $comment
+     * Add comment line to buffer.
      *
      * @return DotenvEditor
      */
     public function addComment(string $comment)
     {
-        $this->writer->appendCommentLine($comment);
+        $this->writer->appendComment($comment);
 
         $this->hasChanged = true;
 
@@ -441,9 +311,7 @@ class DotenvEditor
     }
 
     /**
-     * Set many keys to buffer
-     *
-     * @param  array  $data
+     * Set many keys to buffer.
      *
      * @return DotenvEditor
      */
@@ -465,13 +333,14 @@ class DotenvEditor
                 $key     = (string) $setter['key'];
                 $value   = (string) array_key_exists('value', $setter) ? $setter['value'] : null;
                 $comment = array_key_exists('comment', $setter) ? $setter['comment'] : null;
-                $export  = array_key_exists('export', $setter) ? $setter['export'] : false;
+                $export  = array_key_exists('export', $setter) ? $setter['export'] : null;
 
                 if (!is_file($this->filePath) || !$this->keyExists($key)) {
-                    $this->writer->appendSetter($key, $value, $comment, $export);
+                    $this->writer->appendSetter($key, $value, $comment, (bool) $export);
                 } else {
                     $oldInfo = $this->getKeys([$key]);
                     $comment = is_null($comment) ? $oldInfo[$key]['comment'] : $comment;
+                    $export  = is_null($export) ? $oldInfo[$key]['export'] : (bool) $export;
 
                     $this->writer->updateSetter($key, $value, $comment, $export);
                 }
@@ -484,12 +353,12 @@ class DotenvEditor
     }
 
     /**
-     * Set one key to buffer
+     * Set one key to buffer.
      *
-     * @param string       $key      Key name of setter
-     * @param string|null  $value    Value of setter
-     * @param string|null  $comment  Comment of setter
-     * @param boolean      $export   Leading key name by "export "
+     * @param string      $key     Key name of setter
+     * @param null|string $value   Value of setter
+     * @param null|string $comment Comment of setter
+     * @param bool        $export  Leading key name by "export "
      *
      * @return DotenvEditor
      */
@@ -501,9 +370,45 @@ class DotenvEditor
     }
 
     /**
-     * Delete many keys in buffer
+     * Set the comment for setter.
      *
-     * @param  array $keys
+     * @return DotenvEditor
+     */
+    public function setSetterComment(string $key, ?string $comment = null)
+    {
+        $this->writer->updateSetterComment($key, $comment);
+
+        $this->hasChanged = true;
+
+        return $this;
+    }
+
+    /**
+     * Clear the comment for setter.
+     *
+     * @return DotenvEditor
+     */
+    public function clearSetterComment(string $key)
+    {
+        return $this->setSetterComment($key, null);
+    }
+
+    /**
+     * Set the export status for setter.
+     *
+     * @return DotenvEditor
+     */
+    public function setExportSetter(string $key, bool $state = true)
+    {
+        $this->writer->updateSetterExport($key, $state);
+
+        $this->hasChanged = true;
+
+        return $this;
+    }
+
+    /**
+     * Delete many keys in buffer.
      *
      * @return DotenvEditor
      */
@@ -519,9 +424,7 @@ class DotenvEditor
     }
 
     /**
-     * Delete on key in buffer
-     *
-     * @param  string  $key
+     * Delete on key in buffer.
      *
      * @return DotenvEditor
      */
@@ -533,9 +436,7 @@ class DotenvEditor
     }
 
     /**
-     * Save buffer to file
-     *
-     * @param boolean $rebuildBuffer
+     * Save buffer to file.
      *
      * @return DotenvEditor
      */
@@ -545,7 +446,7 @@ class DotenvEditor
             $this->backup();
         }
 
-        $this->writer->save($this->filePath);
+        $this->writer->saveTo($this->filePath);
 
         if ($rebuildBuffer && $this->hasChanged()) {
             $this->buildBuffer();
@@ -570,9 +471,7 @@ class DotenvEditor
     */
 
     /**
-     * Switching of the auto backup mode
-     *
-     * @param  boolean  $on
+     * Switching of the auto backup mode.
      *
      * @return DotenvEditor
      */
@@ -584,7 +483,7 @@ class DotenvEditor
     }
 
     /**
-     * Create one backup of loaded file
+     * Create one backup of loaded file.
      *
      * @throws FileNotFoundException
      *
@@ -610,7 +509,7 @@ class DotenvEditor
     }
 
     /**
-     * Return an array with all available backups
+     * Return an array with all available backups.
      *
      * @return array
      */
@@ -618,12 +517,12 @@ class DotenvEditor
     {
         $output = [];
 
-        if (! is_dir($this->backupPath)) {
+        if (!is_dir($this->backupPath)) {
             return $output;
         }
 
-        $filenameRegex = '/^' .preg_quote(self::BACKUP_FILENAME_PREFIX, '/'). '(\d{4})_(\d{2})_(\d{2})_(\d{2})(\d{2})(\d{2})' .preg_quote(self::BACKUP_FILENAME_SUFFIX, '/'). '$/';
-        $backups       = array_filter(array_diff(scandir($this->backupPath), array('..', '.')), function($backup) use ($filenameRegex) {
+        $filenameRegex = '/^' . preg_quote(self::BACKUP_FILENAME_PREFIX, '/') . '(\d{4})_(\d{2})_(\d{2})_(\d{2})(\d{2})(\d{2})' . preg_quote(self::BACKUP_FILENAME_SUFFIX, '/') . '$/';
+        $backups       = array_filter(array_diff(scandir($this->backupPath), ['..', '.']), function ($backup) use ($filenameRegex) {
             return preg_match($filenameRegex, $backup);
         });
 
@@ -631,7 +530,7 @@ class DotenvEditor
             $output[] = [
                 'filename'   => $backup,
                 'filepath'   => restyle_path($this->backupPath . $backup),
-                'created_at' => preg_replace($filenameRegex, '$1-$2-$3 $4:$5:$6', $backup)
+                'created_at' => preg_replace($filenameRegex, '$1-$2-$3 $4:$5:$6', $backup),
             ];
         }
 
@@ -639,7 +538,7 @@ class DotenvEditor
     }
 
     /**
-     * Return the information of the latest backup file
+     * Return the information of the latest backup file.
      *
      * @return array
      */
@@ -661,23 +560,19 @@ class DotenvEditor
             }
         }
 
-        $fileName  = self::BACKUP_FILENAME_PREFIX . date("Y_m_d_His", $latestBackup) . self::BACKUP_FILENAME_SUFFIX;
+        $fileName  = self::BACKUP_FILENAME_PREFIX . date('Y_m_d_His', $latestBackup) . self::BACKUP_FILENAME_SUFFIX;
         $filePath  = restyle_path($this->backupPath . $fileName);
-        $createdAt = date("Y-m-d H:i:s", $latestBackup);
+        $createdAt = date('Y-m-d H:i:s', $latestBackup);
 
-        $output = [
+        return [
             'filename'   => $fileName,
             'filepath'   => $filePath,
-            'created_at' => $createdAt
+            'created_at' => $createdAt,
         ];
-
-        return $output;
     }
 
     /**
      * Restore the loaded file from latest backup file or from special file.
-     *
-     * @param string|null $filePath
      *
      * @throws NoBackupAvailableException
      * @throws FileNotFoundException
@@ -690,7 +585,7 @@ class DotenvEditor
             $latestBackup = $this->getLatestBackup();
 
             if (is_null($latestBackup)) {
-                throw new NoBackupAvailableException("There are no available backups!");
+                throw new NoBackupAvailableException('There are no available backups!');
             }
 
             $filePath = $latestBackup['filepath'];
@@ -707,9 +602,7 @@ class DotenvEditor
     }
 
     /**
-     * Delete all or the given backup files
-     *
-     * @param  array  $filePaths
+     * Delete all or the given backup files.
      *
      * @return DotenvEditor
      */
@@ -733,14 +626,141 @@ class DotenvEditor
     }
 
     /**
-     * Delete the given backup file
-     *
-     * @param  string  $filePath
+     * Delete the given backup file.
      *
      * @return DotenvEditor
      */
     public function deleteBackup(string $filePath)
     {
         return $this->deleteBackups([$filePath]);
+    }
+
+    /**
+     * Initialize content for editor.
+     *
+     * @return void
+     */
+    protected function init()
+    {
+        $this->hasChanged = false;
+        $this->filePath = null;
+
+        $this->reader->load(null);
+        $this->writer->setBuffer([]);
+    }
+
+    /**
+     * Standardize the file path.
+     *
+     * @return string
+     */
+    protected function standardizeFilePath(?string $filePath = null)
+    {
+        if (is_null($filePath)) {
+            if (method_exists($this->app, 'environmentPath') && method_exists($this->app, 'environmentFile')) {
+                $filePath = restyle_path($this->app->environmentPath() . '/' . $this->app->environmentFile());
+            } else {
+                $filePath = restyle_path($this->app->basePath() . '/' . '.env');
+            }
+        }
+
+        return $filePath;
+    }
+
+    /**
+     * Build buffer for writer.
+     *
+     * @return void
+     */
+    protected function buildBuffer()
+    {
+        $entries = $this->getEntries(true);
+
+        $buffer = array_map(function ($entry) {
+            $data = [
+                'line' => $entry['line'],
+            ];
+
+            return array_merge($data, $entry['parsed_data']);
+        }, $entries);
+
+        $this->writer->setBuffer($buffer);
+
+        $this->hasChanged = false;
+    }
+
+    /**
+     * Create backup folder if not exists.
+     *
+     * @return void
+     */
+    protected function createBackupFolder()
+    {
+        if (!is_dir($this->backupPath)) {
+            mkdir($this->backupPath, 0777, true);
+        }
+    }
+
+    /**
+     * Config settings for backuping.
+     *
+     * @return void
+     */
+    protected function configBackuping()
+    {
+        $this->autoBackup = $this->config->get('dotenv-editor.autoBackup', true);
+        $this->backupPath = $this->config->get('dotenv-editor.backupPath');
+
+        if (is_null($this->backupPath)) {
+            if (method_exists($this->app, 'storagePath')) {
+                $this->backupPath = ($this->app->storagePath() . '/dotenv-editor/backups');
+            } else {
+                $this->backupPath = $this->app->basePath() . '/storage/dotenv-editor/backups';
+            }
+        }
+
+        $this->backupPath = restyle_path(rtrim($this->backupPath, '\\/') . '/');
+
+        if ($this->config->get('dotenv-editor.alwaysCreateBackupFolder', false)) {
+            $this->createBackupFolder();
+        }
+    }
+
+    /**
+     * Select the parser compatible with the "vlucas/phpdotenv" package.
+     *
+     * @return string
+     */
+    protected function selectCompatibleParser()
+    {
+        $installedDotenvVersion = $this->getDotenvPackageVersion();
+
+        uksort($this->combatibleParserMap, function ($front, $behind) {
+            return version_compare($behind, $front);
+        });
+
+        foreach ($this->combatibleParserMap as $minRequiredVersion => $compatibleParser) {
+            if (version_compare($installedDotenvVersion, $minRequiredVersion) >= 0) {
+                return $compatibleParser;
+            }
+        }
+
+        return ParserV1::class;
+    }
+
+    /**
+     * Catch version of the "vlucas/phpdotenv" package.
+     *
+     * @return string
+     */
+    protected function getDotenvPackageVersion()
+    {
+        $composerLock  = $this->app->basePath() . DIRECTORY_SEPARATOR . 'composer.lock';
+        $arrayContent  = json_decode(file_get_contents($composerLock), true);
+        $dotenvPackage = array_values(array_filter($arrayContent['packages'], function ($packageInfo, $index) {
+            return 'vlucas/phpdotenv' === $packageInfo['name'];
+        }, ARRAY_FILTER_USE_BOTH))[0];
+
+        return preg_replace('/[a-zA-Z]/', '', $dotenvPackage['version']);
     }
 }

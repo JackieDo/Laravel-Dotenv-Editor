@@ -10,28 +10,41 @@ use Jackiedo\DotenvEditor\Exceptions\UnableWriteToFileException;
  * The DotenvWriter writer.
  *
  * @package Jackiedo\DotenvEditor
+ *
  * @author Jackie Do <anhvudo@gmail.com>
  */
 class DotenvWriter implements WriterInterface
 {
     /**
-     * The content buffer
+     * The content buffer.
      *
      * @var array
      */
     protected $buffer;
 
     /**
-     * The instance of Formatter
+     * The instance of Formatter.
      *
      * @var \Jackiedo\DotenvEditor\Workers\Formatters\Formatter
      */
     protected $formatter;
 
     /**
-     * Create a new writer instance
+     * New entry template.
      *
-     * @param FormatterInterface $formatter
+     * @var array
+     */
+    protected $entryTemplate = [
+        'line'    => null,
+        'type'    => 'empty',
+        'export'  => false,
+        'key'     => '',
+        'value'   => '',
+        'comment' => '',
+    ];
+
+    /**
+     * Create a new writer instance.
      */
     public function __construct(FormatterInterface $formatter)
     {
@@ -39,9 +52,7 @@ class DotenvWriter implements WriterInterface
     }
 
     /**
-     * Set buffer with content
-     *
-     * @param array $content
+     * Set buffer with content.
      *
      * @return DotenvWriter
      */
@@ -53,91 +64,76 @@ class DotenvWriter implements WriterInterface
     }
 
     /**
-     * Return content in buffer
+     * Return content in buffer.
      *
-     * @return string
+     * @param bool $asArray Use array format for the result
+     *
+     * @return array|string
      */
-    public function getBuffer()
+    public function getBuffer($asArray = false)
     {
-        return $this->buffer;
+        if ($asArray) {
+            return $this->buffer;
+        }
+
+        return $this->buildTextContent();
     }
 
     /**
-     * Append new line to buffer
-     *
-     * @param string|null $content
+     * Append empty line to buffer.
      *
      * @return DotenvWriter
      */
-    protected function appendLine(?string $content = null)
+    public function appendEmpty()
     {
-        $this->buffer[] = [
-            'line'     => null,
-            'raw_data' => $content
-        ];
-
-        return $this;
+        return $this->appendEntry([]);
     }
 
     /**
-     * Append empty line to buffer
+     * Append comment line to buffer.
      *
      * @return DotenvWriter
      */
-    public function appendEmptyLine()
+    public function appendComment(string $comment)
     {
-        return $this->appendLine();
+        return $this->appendEntry([
+            'type'    => 'comment',
+            'comment' => (string) $comment,
+        ]);
     }
 
     /**
-     * Append comment line to buffer
-     *
-     * @param  string $comment
-     *
-     * @return DotenvWriter
-     */
-    public function appendCommentLine(string $comment)
-    {
-        $content = $this->formatter->formatComment($comment);
-
-        return $this->appendLine($content);
-    }
-
-    /**
-     * Append one setter to buffer
-     *
-     * @param  string       $key
-     * @param  string|null  $value
-     * @param  string|null  $comment
-     * @param  boolean      $export
+     * Append one setter to buffer.
      *
      * @return DotenvWriter
      */
     public function appendSetter(string $key, ?string $value = null, ?string $comment = null, bool $export = false)
     {
-        $content = $this->formatter->formatSetter($key, $value, $comment, $export);
-
-        return $this->appendLine($content);
+        return $this->appendEntry([
+            'type'    => 'setter',
+            'export'  => $export,
+            'key'     => (string) $key,
+            'value'   => (string) $value,
+            'comment' => (string) $comment,
+        ]);
     }
 
     /**
-     * Update one setter in buffer
-     *
-     * @param  string       $key
-     * @param  string|null  $value
-     * @param  string|null  $comment
-     * @param  boolean      $export
+     * Update the setter data in buffer.
      *
      * @return DotenvWriter
      */
     public function updateSetter(string $key, ?string $value = null, ?string $comment = null, bool $export = false)
     {
-        $content = $this->formatter->formatSetter($key, $value, $comment, $export);
-        $pattern = "/^(export\h)?\h*{$key}\h*=.*/";
+        $data = [
+            'export'  => $export,
+            'value'   => (string) $value,
+            'comment' => (string) $comment,
+        ];
 
-        array_walk($this->buffer, function (&$entry, $index) use ($pattern, $content) {
-            if (preg_match($pattern, $entry['raw_data']) === 1) {
-                $entry['raw_data'] = $content;
+        array_walk($this->buffer, function (&$entry, $index) use ($key, $data) {
+            if ('setter' == $entry['type'] && $entry['key'] == $key) {
+                $entry = array_merge($entry, $data);
             }
         });
 
@@ -145,41 +141,80 @@ class DotenvWriter implements WriterInterface
     }
 
     /**
-     * Delete one setter in buffer
-     *
-     * @param  string $key
+     * Update comment for the setter in buffer.
      *
      * @return DotenvWriter
      */
-    public function deleteSetter(string $key)
+    public function updateSetterComment(string $key, ?string $comment = null)
     {
-        $pattern = "/^(export\h)?\h*{$key}\h*=.*/";
+        $data = [
+            'comment' => (string) $comment,
+        ];
 
-        $this->buffer = array_values(array_filter($this->buffer, function ($entry, $index) use ($pattern) {
-                return preg_match($pattern, $entry['raw_data']) === 0;
-            }, ARRAY_FILTER_USE_BOTH));
+        array_walk($this->buffer, function (&$entry, $index) use ($key, $data) {
+            if ('setter' == $entry['type'] && $entry['key'] == $key) {
+                $entry = array_merge($entry, $data);
+            }
+        });
 
         return $this;
     }
 
     /**
-     * Save buffer to special file path
-     *
-     * @param  string $filePath
+     * Update export status for the setter in buffer.
      *
      * @return DotenvWriter
      */
-    public function save(string $filePath)
+    public function updateSetterExport(string $key, bool $state)
+    {
+        $data = [
+            'export' => $state,
+        ];
+
+        array_walk($this->buffer, function (&$entry, $index) use ($key, $data) {
+            if ('setter' == $entry['type'] && $entry['key'] == $key) {
+                $entry = array_merge($entry, $data);
+            }
+        });
+
+        return $this;
+    }
+
+    /**
+     * Delete one setter in buffer.
+     *
+     * @return DotenvWriter
+     */
+    public function deleteSetter(string $key)
+    {
+        $this->buffer = array_values(array_filter($this->buffer, function ($entry, $index) use ($key) {
+            return 'setter' != $entry['type'] || $entry['key'] != $key;
+        }, ARRAY_FILTER_USE_BOTH));
+
+        return $this;
+    }
+
+    /**
+     * Save buffer to special file.
+     *
+     * @return DotenvWriter
+     */
+    public function saveTo(string $filePath)
     {
         $this->ensureFileIsWritable($filePath);
+        file_put_contents($filePath, $this->buildTextContent());
 
-        $data = array_map(function ($entry) {
-            return $entry['raw_data'];
-        }, $this->buffer);
+        return $this;
+    }
 
-        $data = implode(PHP_EOL, $data) . PHP_EOL;
-
-        file_put_contents($filePath, $data);
+    /**
+     * Append new line to buffer.
+     *
+     * @return DotenvWriter
+     */
+    protected function appendEntry(array $data = [])
+    {
+        $this->buffer[] = array_merge($this->entryTemplate, $data);
 
         return $this;
     }
@@ -187,6 +222,8 @@ class DotenvWriter implements WriterInterface
     /**
      * Tests file for writability. If the file doesn't exist, check
      * the parent directory for writability so the file can be created.
+     *
+     * @param mixed $filePath
      *
      * @throws UnableWriteToFileException
      *
@@ -197,5 +234,27 @@ class DotenvWriter implements WriterInterface
         if ((is_file($filePath) && !is_writable($filePath)) || (!is_file($filePath) && !is_writable(dirname($filePath)))) {
             throw new UnableWriteToFileException(sprintf('Unable to write to the file at %s.', $filePath));
         }
+    }
+
+    /**
+     * Build plain text content from buffer.
+     *
+     * @return string
+     */
+    protected function buildTextContent()
+    {
+        $data = array_map(function ($entry) {
+            if ('setter' == $entry['type']) {
+                return $this->formatter->formatSetter($entry['key'], $entry['value'], $entry['comment'], $entry['export']);
+            }
+
+            if ('comment' == $entry['type']) {
+                return $this->formatter->formatComment($entry['comment']);
+            }
+
+            return '';
+        }, $this->buffer);
+
+        return implode(PHP_EOL, $data) . PHP_EOL;
     }
 }

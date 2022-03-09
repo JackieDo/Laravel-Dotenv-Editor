@@ -10,7 +10,8 @@ use Symfony\Component\Console\Input\InputOption;
 
 class DotenvDeleteKeyCommand extends Command
 {
-    use ConfirmableTrait, CreateCommandInstanceTrait;
+    use ConfirmableTrait;
+    use CreateCommandInstanceTrait;
 
     /**
      * The console command name.
@@ -27,14 +28,14 @@ class DotenvDeleteKeyCommand extends Command
     protected $description = 'Delete one setter in the .env file';
 
     /**
-     * The .env file path
+     * The .env file path.
      *
-     * @var string|null
+     * @var null|string
      */
-    protected $filePath = null;
+    protected $filePath;
 
     /**
-     * The key name use to add or update
+     * The key name use to add or update.
      *
      * @var string
      */
@@ -49,7 +50,7 @@ class DotenvDeleteKeyCommand extends Command
     {
         $this->transferInputsToProperties();
 
-        if (! $this->confirmToProceed()) {
+        if (!$this->confirmToProceed()) {
             return false;
         }
 
@@ -59,7 +60,7 @@ class DotenvDeleteKeyCommand extends Command
     }
 
     /**
-     * Transfer inputs to properties of editing
+     * Transfer inputs to properties of editing.
      *
      * @return void
      */
@@ -72,9 +73,9 @@ class DotenvDeleteKeyCommand extends Command
     }
 
     /**
-     * Convert string to corresponding type
+     * Convert string to corresponding type.
      *
-     * @param  string $string
+     * @param string $string
      *
      * @return mixed
      */
@@ -82,15 +83,15 @@ class DotenvDeleteKeyCommand extends Command
     {
         if (is_string($string)) {
             switch (true) {
-                case ($string == 'null' || $string == 'NULL'):
+                case 'null' == $string || 'NULL' == $string:
                     $string = null;
                     break;
 
-                case ($string == 'true' || $string == 'TRUE'):
+                case 'true' == $string || 'TRUE' == $string:
                     $string = true;
                     break;
 
-                case ($string == 'false' || $string == 'FALSE'):
+                case 'false' == $string || 'FALSE' == $string:
                     $string = false;
                     break;
 
@@ -110,7 +111,7 @@ class DotenvDeleteKeyCommand extends Command
     protected function getArguments()
     {
         return [
-            array('key', InputArgument::REQUIRED, 'Key name will be deleted.')
+            ['key', InputArgument::REQUIRED, 'Key name will be deleted.'],
         ];
     }
 
@@ -122,8 +123,8 @@ class DotenvDeleteKeyCommand extends Command
     protected function getOptions()
     {
         return [
-            array('filepath', null, InputOption::VALUE_OPTIONAL, 'The file path should use to load for working. Do not use if you want to load file .env at root application folder.'),
-            array('force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.')
+            ['filepath', null, InputOption::VALUE_OPTIONAL, 'The file path should use to load for working. Do not use if you want to load file .env at root application folder.'],
+            ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
         ];
     }
 }

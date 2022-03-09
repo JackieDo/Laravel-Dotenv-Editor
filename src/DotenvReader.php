@@ -10,28 +10,27 @@ use Jackiedo\DotenvEditor\Exceptions\UnableReadFileException;
  * The DotenvReader class.
  *
  * @package Jackiedo\DotenvEditor
+ *
  * @author Jackie Do <anhvudo@gmail.com>
  */
 class DotenvReader implements ReaderInterface
 {
     /**
-     * The file path
+     * The file path.
      *
      * @var string
      */
     protected $filePath;
 
     /**
-     * The instance of Parser
+     * The instance of Parser.
      *
      * @var \Jackiedo\DotenvEditor\Workers\Parsers\Parser
      */
     protected $parser;
 
     /**
-     * Create a new reader instance
-     *
-     * @param ParserInterface $parser
+     * Create a new reader instance.
      */
     public function __construct(ParserInterface $parser)
     {
@@ -39,9 +38,9 @@ class DotenvReader implements ReaderInterface
     }
 
     /**
-     * Load file
+     * Load file.
      *
-     * @param string|null $filePath
+     * @param string $filePath The path to dotenv file
      *
      * @return DotenvReader
      */
@@ -53,7 +52,7 @@ class DotenvReader implements ReaderInterface
     }
 
     /**
-     * Get content of file
+     * Get content of file.
      *
      * @return string
      */
@@ -65,9 +64,9 @@ class DotenvReader implements ReaderInterface
     }
 
     /**
-     * Get informations of all entries from file content
+     * Get informations of all entries from file content.
      *
-     * @param boolean $withParsedData
+     * @param bool $withParsedData Includes the parsed data in the result
      *
      * @return array
      */
@@ -87,7 +86,7 @@ class DotenvReader implements ReaderInterface
     }
 
     /**
-     * Get informations of all keys from file content
+     * Get informations of all keys from file content.
      *
      * @return array
      */
@@ -98,12 +97,12 @@ class DotenvReader implements ReaderInterface
         return array_reduce($entries, function ($carry, $entry) {
             $data = $this->parser->parseEntry($entry['raw_data']);
 
-            if ($data['type'] == 'setter') {
+            if ('setter' == $data['type']) {
                 $carry[$data['key']] = [
                     'line'    => $entry['line'],
                     'export'  => $data['export'],
                     'value'   => $data['value'],
-                    'comment' => $data['comment']
+                    'comment' => $data['comment'],
                 ];
             }
 
@@ -112,7 +111,7 @@ class DotenvReader implements ReaderInterface
     }
 
     /**
-     * Read content into an array of lines with auto-detected line endings
+     * Read content into an array of lines with auto-detected line endings.
      *
      * @return array
      */

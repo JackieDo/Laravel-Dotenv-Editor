@@ -2,8 +2,8 @@
 
 namespace Jackiedo\DotenvEditor;
 
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Contracts\Support\DeferrableProvider;
+use Illuminate\Support\ServiceProvider;
 use Jackiedo\DotenvEditor\Console\Commands\DotenvBackupCommand;
 use Jackiedo\DotenvEditor\Console\Commands\DotenvDeleteKeyCommand;
 use Jackiedo\DotenvEditor\Console\Commands\DotenvGetBackupsCommand;
@@ -12,9 +12,10 @@ use Jackiedo\DotenvEditor\Console\Commands\DotenvRestoreCommand;
 use Jackiedo\DotenvEditor\Console\Commands\DotenvSetKeyCommand;
 
 /**
- * DotenvEditorServiceProvider
+ * DotenvEditorServiceProvider.
  *
  * @package Jackiedo\DotenvEditor
+ *
  * @author Jackie Do <anhvudo@gmail.com>
  */
 class DotenvEditorServiceProvider extends ServiceProvider implements DeferrableProvider
@@ -27,7 +28,7 @@ class DotenvEditorServiceProvider extends ServiceProvider implements DeferrableP
     public function boot()
     {
         /**
-         * Loading and publishing package's config
+         * Loading and publishing package's config.
          */
         $packageConfigPath = __DIR__ . '/Config/config.php';
         $appConfigPath     = config_path('dotenv-editor.php');
@@ -52,7 +53,25 @@ class DotenvEditorServiceProvider extends ServiceProvider implements DeferrableP
     }
 
     /**
-     * Register commands
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return [
+            'dotenv-editor',
+            'command.dotenv.backup',
+            'command.dotenv.deletekey',
+            'command.dotenv.getbackups',
+            'command.dotenv.getkeys',
+            'command.dotenv.restore',
+            'command.dotenv.setkey',
+        ];
+    }
+
+    /**
+     * Register commands.
      *
      * @return void
      */
@@ -71,23 +90,5 @@ class DotenvEditorServiceProvider extends ServiceProvider implements DeferrableP
         $this->commands('command.dotenv.getkeys');
         $this->commands('command.dotenv.restore');
         $this->commands('command.dotenv.setkey');
-    }
-
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
-    {
-        return [
-            'dotenv-editor',
-            'command.dotenv.backup',
-            'command.dotenv.deletekey',
-            'command.dotenv.getbackups',
-            'command.dotenv.getkeys',
-            'command.dotenv.restore',
-            'command.dotenv.setkey'
-        ];
     }
 }

@@ -8,6 +8,7 @@ use Jackiedo\DotenvEditor\Exceptions\InvalidValueException;
  * The Parser abstract.
  *
  * @package Jackiedo\DotenvEditor
+ *
  * @author Jackie Do <anhvudo@gmail.com>
  */
 abstract class Parser
@@ -18,7 +19,7 @@ abstract class Parser
      * This will produce an array of entries, each entry
      * being an informational array of starting line and raw data.
      *
-     * @param string $filePath
+     * @param string $filePath The path to dotenv file
      *
      * @return array
      */
@@ -38,7 +39,7 @@ abstract class Parser
             if (!$multiline) {
                 $output[] = [
                     'line'     => ++$lineNumber,
-                    'raw_data' => $line
+                    'raw_data' => $line,
                 ];
 
                 $lineNumber = ++$index;
@@ -49,94 +50,10 @@ abstract class Parser
     }
 
     /**
-     * Used to make all multiline variable process.
-     *
-     * @param boolean  $multiline
-     * @param string   $line
-     * @param string[] $buffer
-     *
-     * @return array
-     */
-    protected function multilineProcess($multiline, $line, array $buffer)
-    {
-        // check if $line can be multiline variable
-        if ($started = self::looksLikeMultilineStart($line)) {
-            $multiline = true;
-        }
-
-        if ($multiline) {
-            array_push($buffer, $line);
-
-            if (self::looksLikeMultilineStop($line, $started)) {
-                $multiline = false;
-                $line      = implode(PHP_EOL, $buffer);
-                $buffer    = [];
-            }
-        }
-
-        return [$multiline, $line, $buffer];
-    }
-
-    /**
-     * Determine if the given line can be the start of a multiline variable.
-     *
-     * @param string $line
-     *
-     * @return bool
-     */
-    protected function looksLikeMultilineStart($line)
-    {
-        if (strpos($line, '="') === false) {
-            return false;
-        }
-
-        return self::looksLikeMultilineStop($line, true) === false;
-    }
-
-    /**
-     * Determine if the given line can be the start of a multiline variable.
-     *
-     * @param string $line
-     * @param bool   $started
-     *
-     * @return bool
-     */
-    protected function looksLikeMultilineStop($line, $started)
-    {
-        if ($line === '"') {
-            return true;
-        }
-
-        $seen = $started ? 0 : 1;
-
-        foreach (self::getCharPairs(str_replace('\\\\', '', $line)) as $pair) {
-            if ($pair[0] !== '\\' && $pair[1] === '"') {
-                $seen++;
-            }
-        }
-
-        return $seen > 1;
-    }
-
-    /**
-     * Get all pairs of adjacent characters within the line.
-     *
-     * @param string $line
-     *
-     * @return array
-     */
-    protected function getCharPairs($line)
-    {
-        $chars = str_split($line);
-
-        return array_map(null, $chars, array_slice($chars, 1));
-    }
-
-    /**
      * Parses an entry data into an array of type, export allowed or not,
-     * key, value, and comment information
+     * key, value, and comment information.
      *
-     * @param string $data
+     * @param string $data The entry data
      *
      * @return array
      */
@@ -171,8 +88,92 @@ abstract class Parser
     }
 
     /**
+     * Used to make all multiline variable process.
+     *
+     * @param bool     $multiline
+     * @param string   $line
+     * @param string[] $buffer
+     *
+     * @return array
+     */
+    protected function multilineProcess($multiline, $line, array $buffer)
+    {
+        // check if $line can be multiline variable
+        if ($started = self::looksLikeMultilineStart($line)) {
+            $multiline = true;
+        }
+
+        if ($multiline) {
+            array_push($buffer, $line);
+
+            if (self::looksLikeMultilineStop($line, $started)) {
+                $multiline = false;
+                $line      = implode(PHP_EOL, $buffer);
+                $buffer    = [];
+            }
+        }
+
+        return [$multiline, $line, $buffer];
+    }
+
+    /**
+     * Determine if the given line can be the start of a multiline variable.
+     *
+     * @param string $line
+     *
+     * @return bool
+     */
+    protected function looksLikeMultilineStart($line)
+    {
+        if (false === strpos($line, '="')) {
+            return false;
+        }
+
+        return false === self::looksLikeMultilineStop($line, true);
+    }
+
+    /**
+     * Determine if the given line can be the start of a multiline variable.
+     *
+     * @param string $line
+     * @param bool   $started
+     *
+     * @return bool
+     */
+    protected function looksLikeMultilineStop($line, $started)
+    {
+        if ('"' === $line) {
+            return true;
+        }
+
+        $seen = $started ? 0 : 1;
+
+        foreach (self::getCharPairs(str_replace('\\\\', '', $line)) as $pair) {
+            if ('\\' !== $pair[0] && '"' === $pair[1]) {
+                ++$seen;
+            }
+        }
+
+        return $seen > 1;
+    }
+
+    /**
+     * Get all pairs of adjacent characters within the line.
+     *
+     * @param string $line
+     *
+     * @return array
+     */
+    protected function getCharPairs($line)
+    {
+        $chars = str_split($line);
+
+        return array_map(null, $chars, array_slice($chars, 1));
+    }
+
+    /**
      * Parses a setter into an array of type, export allowed or not,
-     * key, value, and comment information
+     * key, value, and comment information.
      *
      * @param string $setter
      *
@@ -196,9 +197,7 @@ abstract class Parser
     }
 
     /**
-     * Normalising the key of setter to output
-     *
-     * @param string $key
+     * Normalising the key of setter to output.
      *
      * @return string
      */
@@ -208,9 +207,7 @@ abstract class Parser
     }
 
     /**
-     * Normalising the comment to output
-     *
-     * @param string $comment
+     * Normalising the comment to output.
      *
      * @return string
      */
@@ -220,21 +217,17 @@ abstract class Parser
     }
 
     /**
-     * Determine if the entry in the file is empty line
-     *
-     * @param string $data
+     * Determine if the entry in the file is empty line.
      *
      * @return bool
      */
     protected function isEmpty(string $data)
     {
-        return trim($data) === '';
+        return '' === trim($data);
     }
 
     /**
      * Determine if the entry in the file is a comment line, e.g. begins with a #.
-     *
-     * @param string $data
      *
      * @return bool
      */
@@ -242,25 +235,21 @@ abstract class Parser
     {
         $data = ltrim($data);
 
-        return isset($data[0]) && $data[0] === '#';
+        return isset($data[0]) && '#' === $data[0];
     }
 
     /**
      * Determine if the given entry looks like it's setting a key.
      *
-     * @param string $data
-     *
      * @return bool
      */
     protected function looksLikeSetter(string $data)
     {
-        return strpos($data, '=') !== false && strpos($data, '=') !== 0;
+        return false !== strpos($data, '=') && 0 !== strpos($data, '=');
     }
 
     /**
-     * Determine if the given key begins with 'export '
-     *
-     * @param string $key
+     * Determine if the given key begins with 'export '.
      *
      * @return bool
      */
@@ -278,9 +267,6 @@ abstract class Parser
     /**
      * Generate a friendly error message.
      *
-     * @param string $cause
-     * @param string $subject
-     *
      * @return string
      */
     protected function getErrorMessage(string $cause, string $subject)
@@ -293,9 +279,10 @@ abstract class Parser
     }
 
     /**
-     * Parse setter data into array of value, comment information
+     * Parse setter data into array of value, comment information.
      *
      * @param string $data
+     *
      * @throws InvalidValueException
      *
      * @return array

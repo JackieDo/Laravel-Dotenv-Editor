@@ -10,7 +10,8 @@ use Symfony\Component\Console\Input\InputOption;
 
 class DotenvSetKeyCommand extends Command
 {
-    use ConfirmableTrait, CreateCommandInstanceTrait;
+    use ConfirmableTrait;
+    use CreateCommandInstanceTrait;
 
     /**
      * The console command name.
@@ -27,51 +28,51 @@ class DotenvSetKeyCommand extends Command
     protected $description = 'Add new or update one setter into the .env file';
 
     /**
-     * The .env file path
+     * The .env file path.
      *
-     * @var string|null
+     * @var null|string
      */
-    protected $filePath = null;
+    protected $filePath;
 
     /**
-     * Determine restoring the .env file if not exists
+     * Determine restoring the .env file if not exists.
      *
-     * @var boolean
+     * @var bool
      */
     protected $forceRestore = false;
 
     /**
-     * The file path should use to restore
+     * The file path should use to restore.
      *
-     * @var string|null
+     * @var null|string
      */
-    protected $retorePath = null;
+    protected $retorePath;
 
     /**
-     * The key name use to add or update
+     * The key name use to add or update.
      *
      * @var string
      */
     protected $key = 'NEW_ENV_KEY';
 
     /**
-     * Value of key
+     * Value of key.
      *
      * @var mixed
      */
-    protected $value = null;
+    protected $value;
 
     /**
-     * Comment for key
+     * Comment for key.
      *
      * @var mixed
      */
-    protected $comment = null;
+    protected $comment;
 
     /**
-     * Determine leading the key with 'export '
+     * Determine leading the key with 'export '.
      *
-     * @var boolean
+     * @var bool
      */
     protected $exportKey = false;
 
@@ -84,7 +85,7 @@ class DotenvSetKeyCommand extends Command
     {
         $this->transferInputsToProperties();
 
-        if (! $this->confirmToProceed()) {
+        if (!$this->confirmToProceed()) {
             return false;
         }
 
@@ -98,7 +99,7 @@ class DotenvSetKeyCommand extends Command
     }
 
     /**
-     * Transfer inputs to properties of editing
+     * Transfer inputs to properties of editing.
      *
      * @return void
      */
@@ -119,9 +120,9 @@ class DotenvSetKeyCommand extends Command
     }
 
     /**
-     * Convert string to corresponding type
+     * Convert string to corresponding type.
      *
-     * @param  string $string
+     * @param string $string
      *
      * @return mixed
      */
@@ -129,15 +130,15 @@ class DotenvSetKeyCommand extends Command
     {
         if (is_string($string)) {
             switch (true) {
-                case ($string == 'null' || $string == 'NULL'):
+                case 'null' == $string || 'NULL' == $string:
                     $string = null;
                     break;
 
-                case ($string == 'true' || $string == 'TRUE'):
+                case 'true' == $string || 'TRUE' == $string:
                     $string = true;
                     break;
 
-                case ($string == 'false' || $string == 'FALSE'):
+                case 'false' == $string || 'FALSE' == $string:
                     $string = false;
                     break;
 
@@ -157,9 +158,9 @@ class DotenvSetKeyCommand extends Command
     protected function getArguments()
     {
         return [
-            array('key', InputArgument::REQUIRED, 'Key name will be added or updated.'),
-            array('value', InputArgument::OPTIONAL, 'Value want to set for this key.'),
-            array('comment', InputArgument::OPTIONAL, 'Comment want to set for this key. Type "false" to clear comment for exists key.')
+            ['key', InputArgument::REQUIRED, 'Key name will be added or updated.'],
+            ['value', InputArgument::OPTIONAL, 'Value want to set for this key.'],
+            ['comment', InputArgument::OPTIONAL, 'Comment want to set for this key. Type "false" to clear comment for exists key.'],
         ];
     }
 
@@ -171,11 +172,11 @@ class DotenvSetKeyCommand extends Command
     protected function getOptions()
     {
         return [
-            array('filepath', null, InputOption::VALUE_OPTIONAL, 'The file path should use to load for working. Do not use if you want to load file .env at root application folder.'),
-            array('restore', 'r', InputOption::VALUE_NONE, 'Restore the loaded file from backup or special file if the loaded file is not found.'),
-            array('restore-path', null, InputOption::VALUE_OPTIONAL, 'The special file path should use to restore from. Do not use if you want to restore from latest backup file.'),
-            array('export-key', 'e', InputOption::VALUE_NONE, 'Leading before key name with "export " command.'),
-            array('force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.')
+            ['filepath', null, InputOption::VALUE_OPTIONAL, 'The file path should use to load for working. Do not use if you want to load file .env at root application folder.'],
+            ['restore', 'r', InputOption::VALUE_NONE, 'Restore the loaded file from backup or special file if the loaded file is not found.'],
+            ['restore-path', null, InputOption::VALUE_OPTIONAL, 'The special file path should use to restore from. Do not use if you want to restore from latest backup file.'],
+            ['export-key', 'e', InputOption::VALUE_NONE, 'Leading before key name with "export " command.'],
+            ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
         ];
     }
 }

@@ -4,7 +4,6 @@ namespace Jackiedo\DotenvEditor\Console\Commands;
 
 use Illuminate\Console\Command;
 use Jackiedo\DotenvEditor\Console\Traits\CreateCommandInstanceTrait;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
 class DotenvGetKeysCommand extends Command
@@ -26,11 +25,11 @@ class DotenvGetKeysCommand extends Command
     protected $description = 'List all setter in the .env file';
 
     /**
-     * The .env file path
+     * The .env file path.
      *
-     * @var string|null
+     * @var null|string
      */
-    protected $filePath = null;
+    protected $filePath;
 
     /**
      * Execute the console command.
@@ -51,7 +50,7 @@ class DotenvGetKeysCommand extends Command
                 'export'  => ($info['export']) ? 'true' : 'false',
                 'value'   => $info['value'],
                 'comment' => $info['comment'],
-                'line'    => $info['line']
+                'line'    => $info['line'],
             ];
             $output[] = $data;
         }
@@ -67,9 +66,9 @@ class DotenvGetKeysCommand extends Command
     }
 
     /**
-     * Convert string to corresponding type
+     * Convert string to corresponding type.
      *
-     * @param  string $string
+     * @param string $string
      *
      * @return mixed
      */
@@ -77,15 +76,15 @@ class DotenvGetKeysCommand extends Command
     {
         if (is_string($string)) {
             switch (true) {
-                case ($string == 'null' || $string == 'NULL'):
+                case 'null' == $string || 'NULL' == $string:
                     $string = null;
                     break;
 
-                case ($string == 'true' || $string == 'TRUE'):
+                case 'true' == $string || 'TRUE' == $string:
                     $string = true;
                     break;
 
-                case ($string == 'false' || $string == 'FALSE'):
+                case 'false' == $string || 'FALSE' == $string:
                     $string = false;
                     break;
 
@@ -115,7 +114,7 @@ class DotenvGetKeysCommand extends Command
     protected function getOptions()
     {
         return [
-            array('filepath', null, InputOption::VALUE_OPTIONAL, 'The file path should use to load for working. Do not use if you want to load file .env at root application folder.')
+            ['filepath', null, InputOption::VALUE_OPTIONAL, 'The file path should use to load for working. Do not use if you want to load file .env at root application folder.'],
         ];
     }
 }
