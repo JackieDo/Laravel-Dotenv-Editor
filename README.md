@@ -9,21 +9,23 @@
 Laravel Dotenv Editor is the .env file editor (or files with same structure and syntax) for Laravel 5.8+. Now you can easily edit .env files with the following features:
 
 - Read raw content of file.
-- Read lines of file content.
-- Read setters (key-value-pair) of file content.
+- Read entries of file content.
+- Read setters (key-value-pair) in file content.
 - Determine one key name of existing setter.
 - Append empty lines to file.
 - Append comment lines to file.
-- Append new or update exists setter lines to file.
+- Append new or update exists setter entry.
+- Update comment of the existing setter entry.
+- Update export status of the existing setter entry.
 - Delete existing setter line in file.
 - Backup and restore file.
 - Manage backup files.
 
 # Versions and compatibility
-Laravel Dotenv Editor is compatible with Laravel 5+ and above. Since the release of `1.2.0` onwards, this package only supports Laravel 5.8 and later. Previous versions of Laravel will no longer be supported.
+Laravel Dotenv Editor is compatible with Laravel 5.8 and later.
 
-# Note for the release `1.2.0` and later
-Starting with the release `1.2.0`, the .gitignore file in the folder containing the backup file will no longer be created automatically. Developers will have to create this file manually if deemed necessary.
+# Important note for the version `2.x`
+After the release of `1.2.1`, version 1.x will be discontinued in favor of a new version (version `2.x`) with some changes to be compatible with the parsing method of `vlucas/dotenv` package. Version `2.x` has changed quite a lot compared to the previous version. If you have used earlier versions of this package, please re-read the instructions carefully.
 
 # Documentation
 Look at one of the following topics to learn more about Laravel Dotenv Editor:
@@ -45,29 +47,10 @@ Look at one of the following topics to learn more about Laravel Dotenv Editor:
     - [Exceptions](#exceptions)
 
 ## Installation
-You can install this package through [Composer](https://getcomposer.org) with the following steps:
-
-#### Step 1 - Require package
-At the root of your application directory, run the following command (in any terminal client):
+You can install this package through [Composer](https://getcomposer.org). At the root of your application directory, run the following command (in any terminal client):
 
 ```shell
 $ composer require jackiedo/dotenv-editor
-```
-
-**Note:** Since Laravel 5.5, [service providers and aliases are automatically registered](https://laravel.com/docs/5.5/packages#package-discovery), so you can safely skip the following two steps:
-
-#### Step 2 - Register service provider
-Open `config/app.php`, and add a new line to the providers section:
-
-```php
-Jackiedo\DotenvEditor\DotenvEditorServiceProvider::class,
-```
-
-#### Step 3 - Register facade
-Add the following line to the aliases section in file `config/app.php`:
-
-```php
-'DotenvEditor' => Jackiedo\DotenvEditor\Facades\DotenvEditor::class,
 ```
 
 ## Configuration
@@ -105,7 +88,7 @@ class YourClass
 {
     public function yourMethod()
     {
-        DotenvEditor::doSomething();
+        $return = DotenvEditor::doSomething();
     }
 }
 ```
@@ -196,29 +179,29 @@ public function getContent();
 $rawContent = DotenvEditor::getContent();
 ```
 
-#### Reading content by lines.
+#### Reading content by entries.
 **Method syntax:**
 
 ```php
 /**
- * Get all lines from file
+ * Get all entries from file
  *
  * @return array
  */
-public function getLines();
+public function getEntries(bool $withParsedData = false);
 ```
 
 **Example:**
 
 ```php
-$lines = DotenvEditor::getLines();
+$lines = DotenvEditor::getEntries(true);
 ```
 
 **Note:** This will return an array. Each element in the array consists of the following items:
 
-- Number of the line.
-- Raw content of the line.
-- Parsed content of the line, including: type of line (empty, comment, setter...), key name of setter, value of setter, comment of setter...
+- Starting line number of entry.
+- Raw content of the entry.
+- Parsed content of the entry (if the `$withParsedData` is set to `true`), including: type of entry (empty, comment, setter...), key name of setter, value of setter, comment of setter...
 
 #### Reading content by keys
 **Method syntax:**
@@ -252,6 +235,27 @@ $keys = DotenvEditor::getKeys(['APP_DEBUG', 'APP_URL']);
 - Comment of the setter.
 - If this key is used for the "export" command or not.
 
+#### Reading data of the specific key
+**Method syntax:**
+
+```php
+/**
+ * Return information of entry matching to a given key in the file content.
+ *
+ * @throws KeyNotFoundException
+ *
+ * @return array
+ */
+public function getKey($key);
+```
+
+**Example:**
+
+```php
+// Get all keys
+$keys = DotenvEditor::getKey('EXAMPLE_KEY');
+```
+
 #### Determine if a key exists
 **Method syntax:**
 
@@ -281,7 +285,7 @@ $keyExists = DotenvEditor::keyExists('APP_URL');
  *
  * @param  $key
  *
- * @throws \Jackiedo\DotenvEditor\Exceptions\KeyNotFoundException
+ * @throws KeyNotFoundException
  *
  * @return string
  */
@@ -297,8 +301,10 @@ $value = DotenvEditor::getValue('APP_URL');
 ### Writing content into a file
 To edit file content, you have two jobs:
 
-- First is writing content into the buffer
-- Second is saving the buffer into the file
+- First is writing content into the buffer.
+- Second is saving the buffer into the file.
+
+> Always keep in mind that the contents of the buffer and the dotenv file will not be the same unless you have saved the contents.
 
 #### Add an empty line into buffer
 **Method syntax:**
@@ -315,7 +321,7 @@ public function addEmpty();
 **Example:**
 
 ```php
-$file = DotenvEditor::addEmpty();
+$editor = DotenvEditor::addEmpty();
 ```
 
 #### Add a comment line into buffer
@@ -325,17 +331,17 @@ $file = DotenvEditor::addEmpty();
 /**
  * Add comment line to buffer
  *
- * @param object
+ * @param string $comment
  *
  * @return DotenvEditor
  */
-public function addComment($comment);
+public function addComment(string $comment);
 ```
 
 **Example:**
 
 ```php
-$file = DotenvEditor::addComment('This is a comment line');
+$editor = DotenvEditor::addComment('This is a comment line');
 ```
 
 #### Add or update a setter into buffer
@@ -343,38 +349,41 @@ $file = DotenvEditor::addComment('This is a comment line');
 
 ```php
 /**
- * Set one key to buffer
+ * Set one key to|in the buffer.
  *
- * @param string       $key      Key name of setter
- * @param string|null  $value    Value of setter
- * @param string|null  $comment  Comment of setter
- * @param boolean      $export   Leading key name by "export "
+ * @param string      $key     Key name of setter
+ * @param null|string $value   Value of setter
+ * @param null|string $comment Comment of setter
+ * @param null|bool   $export  Leading key name by "export "
  *
  * @return DotenvEditor
  */
-public function setKey($key, $value = null, $comment = null, $export = false);
+public function setKey(string $key, ?string $value = null, ?string $comment = null, $export = null);
 ```
 
 **Example:**
 
 ```php
 // Set key ENV_KEY with empty value
-$file = DotenvEditor::setKey('ENV_KEY');
+$editor = DotenvEditor::setKey('ENV_KEY');
 
 // Set key ENV_KEY with none empty value
-$file = DotenvEditor::setKey('ENV_KEY', 'anything-you-want');
+$editor = DotenvEditor::setKey('ENV_KEY', 'anything you want');
 
 // Set key ENV_KEY with a value and comment
-$file = DotenvEditor::setKey('ENV_KEY', 'anything-you-want', 'your-comment');
+$editor = DotenvEditor::setKey('ENV_KEY', 'anything you want', 'your comment');
 
 // Update key ENV_KEY with a new value and keep earlier comment
-$file = DotenvEditor::setKey('ENV_KEY', 'new-value-1');
+$editor = DotenvEditor::setKey('ENV_KEY', 'new value 1');
 
-// Update key ENV_KEY with a new value, keep earlier comment and use 'export ' before key name
-$file = DotenvEditor::setKey('ENV_KEY', 'new-value', null, true);
+// Update key ENV_KEY with a new value, keep previous comment and use the 'export' keyword before key name
+$editor = DotenvEditor::setKey('ENV_KEY', 'new value', null, true);
 
-// Update key ENV_KEY with a new value and clear comment
-$file = DotenvEditor::setKey('ENV_KEY', 'new-value-2', '', false);
+// Update key ENV_KEY with a new value, remove comment and keep previous export status
+$editor = DotenvEditor::setKey('ENV_KEY', 'new-value-2', '');
+
+// Update key ENV_KEY with a new value, remove comment and export keyword
+$editor = DotenvEditor::setKey('ENV_KEY', 'new-value-2', '', false);
 ```
 
 #### Add or update multi setter into buffer
@@ -394,7 +403,7 @@ public function setKeys($data);
 **Example:**
 
 ```php
-$file = DotenvEditor::setKeys([
+$editor = DotenvEditor::setKeys([
     [
         'key'     => 'ENV_KEY_1',
         'value'   => 'your-value-1',
@@ -416,21 +425,63 @@ $file = DotenvEditor::setKeys([
 Alternatively, you can also provide an associative array of keys and values:
 
 ```php
-$file = DotenvEditor::setKeys([
+$editor = DotenvEditor::setKeys([
     'ENV_KEY_1' => 'your-value-1',
     'ENV_KEY_2' => 'your-value-2',
     'ENV_KEY_3' => 'your-value-3',
 ]);
 ```
 
-#### Delete a setter line in buffer
+#### Set comment for an existing setter
+**Method syntax:**
+
+```php
+/**
+ * Set the comment for setter.
+ *
+ * @param string      $key     Key name of setter
+ * @param null|string $comment The comment content
+ *
+ * @return DotenvEditor
+ */
+public function setSetterComment(string $key, ?string $comment = null);
+```
+
+**Example:**
+
+```php
+$editor = DotenvEditor::setSetterComment('ENV_KEY', 'new comment');
+```
+
+#### Set export status for an existing setter
+**Method syntax:**
+
+```php
+/**
+ * Set the export status for setter.
+ *
+ * @param string $key   Key name of setter
+ * @param bool   $state Leading key name by "export "
+ *
+ * @return DotenvEditor
+ */
+public function setExportSetter(string $key, bool $state = true);
+```
+
+**Example:**
+
+```php
+$editor = DotenvEditor::setExportSetter('ENV_KEY', true);
+```
+
+#### Delete a setter entry in buffer
 **Method syntax:**
 
 ```php
 /**
  * Delete on key in buffer
  *
- * @param  string  $key
+ * @param string $key Key name of setter
  *
  * @return DotenvEditor
  */
@@ -440,10 +491,10 @@ public function deleteKey($key);
 **Example:**
 
 ```php
-$file = DotenvEditor::deleteKey('ENV_KEY');
+$editor = DotenvEditor::deleteKey('ENV_KEY');
 ```
 
-#### Delete multi setter lines in buffer
+#### Delete multi setter entries in buffer
 **Method syntax:**
 
 ```php
@@ -461,7 +512,19 @@ public function deleteKeys($keys = []);
 
 ```php
 // Delete two keys
-$file = DotenvEditor::deleteKeys(['ENV_KEY_1', 'ENV_KEY_2']);
+$editor = DotenvEditor::deleteKeys(['ENV_KEY_1', 'ENV_KEY_2']);
+```
+
+#### Check if the buffer has changed from dotenv file content
+**Method syntax:**
+
+```php
+/**
+ * Determine if the buffer has changed.
+ *
+ * @return bool
+ */
+public function hasChanged();
 ```
 
 #### Save buffer into file
@@ -469,17 +532,19 @@ $file = DotenvEditor::deleteKeys(['ENV_KEY_1', 'ENV_KEY_2']);
 
 ```php
 /**
- * Save buffer to file
+ * Save buffer to file.
+ *
+ * @param bool $rebuildBuffer Rebuild buffer from content of dotenv file
  *
  * @return DotenvEditor
  */
-public function save();
+public function save(bool $rebuildBuffer = true);
 ```
 
 **Example:**
 
 ```php
-$file = DotenvEditor::save();
+$editor = DotenvEditor::save();
 ```
 
 ### Backing up and restoring file
@@ -498,7 +563,7 @@ public function backup();
 **Example:**
 
 ```php
-$file = DotenvEditor::backup();
+$editor = DotenvEditor::backup();
 ```
 
 #### Get all backup versions
@@ -555,10 +620,10 @@ public function restore($filePath = null);
 
 ```php
 // Restore from latest backup
-$file = DotenvEditor::restore();
+$editor = DotenvEditor::restore();
 
 // Restore from other file
-$file = DotenvEditor::restore(storage_path('dotenv-editor/backups/.env.backup_2017_04_10_152709'));
+$editor = DotenvEditor::restore(storage_path('dotenv-editor/backups/.env.backup_2017_04_10_152709'));
 ```
 
 #### Delete one backup file
@@ -578,7 +643,7 @@ public function deleteBackup($filePath);
 **Example:**
 
 ```php
-$file = DotenvEditor::deleteBackup(storage_path('dotenv-editor/backups/.env.backup_2017_04_10_152709'));
+$editor = DotenvEditor::deleteBackup(storage_path('dotenv-editor/backups/.env.backup_2017_04_10_152709'));
 ```
 
 #### Delete multi backup files
@@ -599,13 +664,13 @@ public function deleteBackups($filePaths = []);
 
 ```php
 // Delete two backup file
-$file = DotenvEditor::deleteBackups([
+$editor = DotenvEditor::deleteBackups([
     storage_path('dotenv-editor/backups/.env.backup_2017_04_10_152709'),
     storage_path('dotenv-editor/backups/.env.backup_2017_04_11_091552')
 ]);
 
 // Delete all backup
-$file = DotenvEditor::deleteBackups();
+$editor = DotenvEditor::deleteBackups();
 ```
 
 #### Change auto backup mode
@@ -626,19 +691,19 @@ public function autoBackup($on = true);
 
 ```php
 // Enable auto backup
-$file = DotenvEditor::autoBackup(true);
+$editor = DotenvEditor::autoBackup(true);
 
 // Disable auto backup
-$file = DotenvEditor::autoBackup(false);
+$editor = DotenvEditor::autoBackup(false);
 ```
 
 ### Method chaining
 Some functions of loading, writing, backing up, restoring support method chaining. So these functions can be called chained together in a single statement. Example:
 
 ```php
-$file = DotenvEditor::load('.env.example')->backup()->setKey('APP_URL', 'http://example.com')->save();
+$editor = DotenvEditor::load('.env.example')->backup()->setKey('APP_URL', 'http://example.com')->save();
 
-return $file->getKeys();
+return $editor->getKeys();
 ```
 
 ### Working with Artisan CLI
@@ -665,6 +730,7 @@ This package will throw exceptions if something goes wrong. This way it's easier
 | Exception                    | Reason                                         |
 | ---------------------------- | ---------------------------------------------- |
 | *FileNotFoundException*      | When the file was not found.                   |
+| *InvalidKeyException*        | When the key of setter is invalid.             |
 | *InvalidValueException*      | When the value of setter is invalid.           |
 | *KeyNotFoundException*       | When the requested key does not exist in file. |
 | *NoBackupAvailableException* | When no backup file exists.                    |
