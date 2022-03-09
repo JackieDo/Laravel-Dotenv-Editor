@@ -40,7 +40,7 @@ Look at one of the following topics to learn more about Laravel Dotenv Editor:
     - [Using dependency injection](#using-dependency-injection)
     - [Loading file for working](#loading-file-for-working)
     - [Reading file content](#reading-file-content)
-    - [Writing content into file](#writing-content-into-file)
+    - [Edit file content](#edit-file-content)
     - [Backing up and restoring file](#backing-up-and-restoring-file)
     - [Method chaining](#method-chaining)
     - [Working with Artisan CLI](#working-with-artisan-cli)
@@ -298,7 +298,7 @@ public function getValue($key);
 $value = DotenvEditor::getValue('APP_URL');
 ```
 
-### Writing content into file
+### Edit file content
 To edit file content, you have two jobs:
 
 - First is writing content into the buffer.
