@@ -11,6 +11,7 @@ use Jackiedo\DotenvEditor\Workers\Formatters\Formatter;
 use Jackiedo\DotenvEditor\Workers\Parsers\ParserV1;
 use Jackiedo\DotenvEditor\Workers\Parsers\ParserV2;
 use Jackiedo\DotenvEditor\Workers\Parsers\ParserV3;
+use Jackiedo\PathHelper\Path;
 
 /**
  * The DotenvEditor class.
@@ -542,7 +543,7 @@ class DotenvEditor
         foreach ($backups as $backup) {
             $output[] = [
                 'filename'   => $backup,
-                'filepath'   => restyle_path($this->backupPath . $backup),
+                'filepath'   => Path::osStyle($this->backupPath . $backup),
                 'created_at' => preg_replace($filenameRegex, '$1-$2-$3 $4:$5:$6', $backup),
             ];
         }
@@ -574,7 +575,7 @@ class DotenvEditor
         }
 
         $fileName  = self::BACKUP_FILENAME_PREFIX . date('Y_m_d_His', $latestBackup) . self::BACKUP_FILENAME_SUFFIX;
-        $filePath  = restyle_path($this->backupPath . $fileName);
+        $filePath  = Path::osStyle($this->backupPath . $fileName);
         $createdAt = date('Y-m-d H:i:s', $latestBackup);
 
         return [
@@ -671,9 +672,9 @@ class DotenvEditor
     {
         if (is_null($filePath)) {
             if (method_exists($this->app, 'environmentPath') && method_exists($this->app, 'environmentFile')) {
-                $filePath = restyle_path($this->app->environmentPath() . '/' . $this->app->environmentFile());
+                $filePath = Path::osStyle($this->app->environmentPath() . '/' . $this->app->environmentFile());
             } else {
-                $filePath = restyle_path($this->app->basePath() . '/' . '.env');
+                $filePath = Path::osStyle($this->app->basePath() . '/' . '.env');
             }
         }
 
@@ -732,7 +733,7 @@ class DotenvEditor
             }
         }
 
-        $this->backupPath = restyle_path(rtrim($this->backupPath, '\\/') . '/');
+        $this->backupPath = Path::osStyle(rtrim($this->backupPath, '\\/') . '/');
 
         if ($this->config->get('dotenv-editor.alwaysCreateBackupFolder', false)) {
             $this->createBackupFolder();

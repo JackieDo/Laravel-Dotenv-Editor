@@ -12,12 +12,10 @@
     "require": {
         "illuminate/console": "^9.0|^8.0|7.0|^6.0|^5.8",
         "illuminate/contracts": "^9.0|^8.0|7.0|^6.0|^5.8",
-        "illuminate/support": "^9.0|^8.0|7.0|^6.0|^5.8"
+        "illuminate/support": "^9.0|^8.0|7.0|^6.0|^5.8",
+        "jackiedo/path-helper": "^1.0"
     },
     "autoload": {
-        "files": [
-            "src/helpers.php"
-        ],
         "psr-4": {
             "Jackiedo\\DotenvEditor\\": "src"
         }
