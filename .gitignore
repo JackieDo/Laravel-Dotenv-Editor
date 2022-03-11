@@ -1,4 +1,8 @@
-/vendor
+/vendor/
+/.github/workflows/
+.phpunit.result.cache
+.php_cs.cache
+.php-cs-fixer.cache
+.DS_Store
 composer.phar
 composer.lock
-.DS_Store
