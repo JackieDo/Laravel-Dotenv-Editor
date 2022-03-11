@@ -25,7 +25,7 @@ class ParserV3 extends Parser implements ParserInterface
     /**
      * Parse setter data into array of value, comment information.
      *
-     * @param string $data
+     * @param null|string $data
      *
      * @throws InvalidValueException
      *
@@ -144,6 +144,10 @@ class ParserV3 extends Parser implements ParserInterface
 
     /**
      * Grab the specified substring of the input.
+     *
+     * @param string   $input
+     * @param int      $start
+     * @param null|int $length
      *
      * @return string
      */

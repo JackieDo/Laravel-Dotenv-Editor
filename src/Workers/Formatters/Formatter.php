@@ -17,7 +17,8 @@ class Formatter implements FormatterInterface
     /**
      * Formatting the key of setter to writing.
      *
-     * @param bool $export optional
+     * @param string $key
+     * @param bool   $export optional
      *
      * @return string
      */
@@ -39,6 +40,8 @@ class Formatter implements FormatterInterface
     /**
      * Formatting the comment to writing.
      *
+     * @param ?string $comment
+     *
      * @return string
      */
     public function formatComment(?string $comment)
@@ -52,6 +55,7 @@ class Formatter implements FormatterInterface
     /**
      * Build an setter from the individual components for writing.
      *
+     * @param string      $key
      * @param null|string $value   optional
      * @param null|string $comment optional
      * @param bool        $export  optional
@@ -92,6 +96,8 @@ class Formatter implements FormatterInterface
 
     /**
      * Determine if the input string is valid key.
+     *
+     * @param string $key
      *
      * @return bool
      */

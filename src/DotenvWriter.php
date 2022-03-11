@@ -45,6 +45,8 @@ class DotenvWriter implements WriterInterface
 
     /**
      * Create a new writer instance.
+     *
+     * @param FormatterInterface $formatter
      */
     public function __construct(FormatterInterface $formatter)
     {
@@ -53,6 +55,8 @@ class DotenvWriter implements WriterInterface
 
     /**
      * Set buffer with content.
+     *
+     * @param array $content
      *
      * @return DotenvWriter
      */
@@ -70,7 +74,7 @@ class DotenvWriter implements WriterInterface
      *
      * @return array|string
      */
-    public function getBuffer($asArray = true)
+    public function getBuffer(bool $asArray = true)
     {
         if ($asArray) {
             return $this->buffer;
@@ -92,6 +96,8 @@ class DotenvWriter implements WriterInterface
     /**
      * Append comment line to buffer.
      *
+     * @param string $comment
+     *
      * @return DotenvWriter
      */
     public function appendComment(string $comment)
@@ -104,6 +110,11 @@ class DotenvWriter implements WriterInterface
 
     /**
      * Append one setter to buffer.
+     *
+     * @param string      $key
+     * @param null|string $value
+     * @param null|string $comment
+     * @param bool        $export
      *
      * @return DotenvWriter
      */
@@ -120,6 +131,11 @@ class DotenvWriter implements WriterInterface
 
     /**
      * Update the setter data in buffer.
+     *
+     * @param string      $key
+     * @param null|string $value
+     * @param null|string $comment
+     * @param bool        $export
      *
      * @return DotenvWriter
      */
@@ -143,6 +159,9 @@ class DotenvWriter implements WriterInterface
     /**
      * Update comment for the setter in buffer.
      *
+     * @param string      $key
+     * @param null|string $comment
+     *
      * @return DotenvWriter
      */
     public function updateSetterComment(string $key, ?string $comment = null)
@@ -162,6 +181,9 @@ class DotenvWriter implements WriterInterface
 
     /**
      * Update export status for the setter in buffer.
+     *
+     * @param string $key
+     * @param bool   $state
      *
      * @return DotenvWriter
      */
@@ -183,6 +205,8 @@ class DotenvWriter implements WriterInterface
     /**
      * Delete one setter in buffer.
      *
+     * @param string $key
+     *
      * @return DotenvWriter
      */
     public function deleteSetter(string $key)
@@ -197,6 +221,8 @@ class DotenvWriter implements WriterInterface
     /**
      * Save buffer to special file.
      *
+     * @param string $filePath
+     *
      * @return DotenvWriter
      */
     public function saveTo(string $filePath)
@@ -209,6 +235,8 @@ class DotenvWriter implements WriterInterface
 
     /**
      * Append new line to buffer.
+     *
+     * @param array $data
      *
      * @return DotenvWriter
      */

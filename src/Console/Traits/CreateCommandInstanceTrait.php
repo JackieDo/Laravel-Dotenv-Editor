@@ -15,6 +15,8 @@ trait CreateCommandInstanceTrait
 
     /**
      * Create a new command instance.
+     *
+     * @param DotenvEditor $editor The editor instance
      */
     public function __construct(DotenvEditor $editor)
     {
@@ -25,6 +27,7 @@ trait CreateCommandInstanceTrait
 
     /**
      * Execute the console command.
+     *
      * This is alias of the method fire().
      *
      * @return mixed

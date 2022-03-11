@@ -31,6 +31,8 @@ class DotenvReader implements ReaderInterface
 
     /**
      * Create a new reader instance.
+     *
+     * @param ParserInterface $parser
      */
     public function __construct(ParserInterface $parser)
     {

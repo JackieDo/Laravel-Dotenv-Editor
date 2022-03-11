@@ -25,7 +25,7 @@ class ParserV2 extends Parser implements ParserInterface
     /**
      * Parse setter data into array of value, comment information.
      *
-     * @param string $data
+     * @param null|string $data
      *
      * @throws InvalidValueException
      *

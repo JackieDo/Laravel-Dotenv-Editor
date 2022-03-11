@@ -57,7 +57,7 @@ class DotenvEditor
     protected $combatibleParserMap = [
         '5.0.0' => ParserV3::class,  // Laravel 8.x|9.x using "vlucas/dotenv" ^v5.0|^5.4
         '4.0.0' => ParserV2::class,  // Laravel 7.x using "vlucas/dotenv" ^v4.0
-        '3.3.0' => ParserV1::class,   // Laravel 5.8 and 6.x using "vlucas/dotenv" ^v3.3
+        '3.3.0' => ParserV1::class,  // Laravel 5.8|6.x using "vlucas/dotenv" ^v3.3
     ];
 
     /**
@@ -75,7 +75,7 @@ class DotenvEditor
     protected $writer;
 
     /**
-     * The file path.
+     * The dotenv file path.
      *
      * @var string
      */
@@ -104,6 +104,9 @@ class DotenvEditor
 
     /**
      * Create a new DotenvEditor instance.
+     *
+     * @param Container $app
+     * @param Config    $config
      *
      * @return void
      */
@@ -177,6 +180,8 @@ class DotenvEditor
     /**
      * Get all entries from file.
      *
+     * @param bool $withParsedData Include parsed data for each entry in the result
+     *
      * @return array
      */
     public function getEntries(bool $withParsedData = false)
@@ -185,7 +190,9 @@ class DotenvEditor
     }
 
     /**
-     * Get all or exists given keys in file content.
+     * Get all or existing given keys in file content.
+     *
+     * @param array $keys The setter key names
      *
      * @return array
      */
@@ -205,6 +212,8 @@ class DotenvEditor
     /**
      * Return information of entry matching to a given key in the file content.
      *
+     * @param string $key The setter key name
+     *
      * @throws KeyNotFoundException
      *
      * @return array
@@ -223,6 +232,8 @@ class DotenvEditor
     /**
      * Return the value matching to a given key in the file content.
      *
+     * @param string $key The setter key name
+     *
      * @return string
      */
     public function getValue(string $key)
@@ -233,7 +244,7 @@ class DotenvEditor
     /**
      * Check, if a given key is exists in the file content.
      *
-     * @param string $keys
+     * @param string $key The setter key name
      *
      * @return bool
      */
@@ -275,7 +286,7 @@ class DotenvEditor
     }
 
     /**
-     * Return content in buffer.
+     * Return buffer content.
      *
      * @param bool $asArray Use array format for the result
      *
@@ -303,6 +314,8 @@ class DotenvEditor
     /**
      * Add comment line to buffer.
      *
+     * @param string $comment Comment content
+     *
      * @return DotenvEditor
      */
     public function addComment(string $comment)
@@ -315,7 +328,9 @@ class DotenvEditor
     }
 
     /**
-     * Set many keys to buffer.
+     * Append or update some setters in the buffer.
+     *
+     * @param array $data The setter data set
      *
      * @return DotenvEditor
      */
@@ -357,9 +372,9 @@ class DotenvEditor
     }
 
     /**
-     * Set one key to|in the buffer.
+     * Append or update one setter in the buffer.
      *
-     * @param string      $key     Key name of setter
+     * @param string      $key     The setter key name
      * @param null|string $value   Value of setter
      * @param null|string $comment Comment of setter
      * @param null|bool   $export  Leading key name by "export "
@@ -376,7 +391,7 @@ class DotenvEditor
     /**
      * Set the comment for setter.
      *
-     * @param string      $key     Key name of setter
+     * @param string      $key     The setter key name
      * @param null|string $comment The comment content
      *
      * @return DotenvEditor
@@ -393,7 +408,7 @@ class DotenvEditor
     /**
      * Clear the comment for setter.
      *
-     * @param string $key Key name of setter
+     * @param string $key The setter key name
      *
      * @return DotenvEditor
      */
@@ -405,7 +420,7 @@ class DotenvEditor
     /**
      * Set the export status for setter.
      *
-     * @param string $key   Key name of setter
+     * @param string $key   The setter key name
      * @param bool   $state Leading key name by "export "
      *
      * @return DotenvEditor
@@ -420,7 +435,9 @@ class DotenvEditor
     }
 
     /**
-     * Delete many keys in buffer.
+     * Delete some setters in buffer.
+     *
+     * @param array $keys The setter key names
      *
      * @return DotenvEditor
      */
@@ -436,7 +453,9 @@ class DotenvEditor
     }
 
     /**
-     * Delete on key in buffer.
+     * Delete one setter in buffer.
+     *
+     * @param string $key The setter key name
      *
      * @return DotenvEditor
      */
@@ -485,7 +504,9 @@ class DotenvEditor
     */
 
     /**
-     * Switching of the auto backup mode.
+     * Turn automatic backup on or off.
+     *
+     * @param bool $on The state to set
      *
      * @return DotenvEditor
      */
@@ -588,6 +609,8 @@ class DotenvEditor
     /**
      * Restore the loaded file from latest backup file or from special file.
      *
+     * @param null|string $filePath The file use to restore
+     *
      * @throws NoBackupAvailableException
      * @throws FileNotFoundException
      *
@@ -618,6 +641,8 @@ class DotenvEditor
     /**
      * Delete all or the given backup files.
      *
+     * @param array $filePaths The set of backup files to delete
+     *
      * @return DotenvEditor
      */
     public function deleteBackups(array $filePaths = [])
@@ -642,6 +667,8 @@ class DotenvEditor
     /**
      * Delete the given backup file.
      *
+     * @param string $filePath The backup file to delete
+     *
      * @return DotenvEditor
      */
     public function deleteBackup(string $filePath)
@@ -665,6 +692,8 @@ class DotenvEditor
 
     /**
      * Standardize the file path.
+     *
+     * @param null|string $filePath The file path
      *
      * @return string
      */

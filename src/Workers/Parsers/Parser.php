@@ -21,7 +21,7 @@ abstract class Parser
      *
      * @param string $filePath The path to dotenv file
      *
-     * @return array
+     * @return string[]
      */
     public function parseFile(string $filePath)
     {
@@ -94,9 +94,9 @@ abstract class Parser
      * @param string   $line
      * @param string[] $buffer
      *
-     * @return array
+     * @return array{bool,string,string[]}
      */
-    protected function multilineProcess($multiline, $line, array $buffer)
+    protected function multilineProcess(bool $multiline, string $line, array $buffer)
     {
         // check if $line can be multiline variable
         if ($started = self::looksLikeMultilineStart($line)) {
@@ -123,7 +123,7 @@ abstract class Parser
      *
      * @return bool
      */
-    protected function looksLikeMultilineStart($line)
+    protected function looksLikeMultilineStart(string $line)
     {
         if (false === strpos($line, '="')) {
             return false;
@@ -140,7 +140,7 @@ abstract class Parser
      *
      * @return bool
      */
-    protected function looksLikeMultilineStop($line, $started)
+    protected function looksLikeMultilineStop(string $line, bool $started)
     {
         if ('"' === $line) {
             return true;
@@ -164,7 +164,7 @@ abstract class Parser
      *
      * @return array
      */
-    protected function getCharPairs($line)
+    protected function getCharPairs(string $line)
     {
         $chars = str_split($line);
 
@@ -179,7 +179,7 @@ abstract class Parser
      *
      * @return array
      */
-    protected function parseSetter($setter)
+    protected function parseSetter(string $setter)
     {
         list($key, $data) = array_map('trim', explode('=', $setter, 2));
 
@@ -199,6 +199,8 @@ abstract class Parser
     /**
      * Normalising the key of setter to output.
      *
+     * @param string $key
+     *
      * @return string
      */
     protected function normaliseKey(string $key)
@@ -208,6 +210,8 @@ abstract class Parser
 
     /**
      * Normalising the comment to output.
+     *
+     * @param string $comment
      *
      * @return string
      */
@@ -219,6 +223,8 @@ abstract class Parser
     /**
      * Determine if the entry in the file is empty line.
      *
+     * @param string $data
+     *
      * @return bool
      */
     protected function isEmpty(string $data)
@@ -228,6 +234,8 @@ abstract class Parser
 
     /**
      * Determine if the entry in the file is a comment line, e.g. begins with a #.
+     *
+     * @param string $data
      *
      * @return bool
      */
@@ -241,6 +249,8 @@ abstract class Parser
     /**
      * Determine if the given entry looks like it's setting a key.
      *
+     * @param string $data
+     *
      * @return bool
      */
     protected function looksLikeSetter(string $data)
@@ -250,6 +260,8 @@ abstract class Parser
 
     /**
      * Determine if the given key begins with 'export '.
+     *
+     * @param string $key
      *
      * @return bool
      */
@@ -267,6 +279,9 @@ abstract class Parser
     /**
      * Generate a friendly error message.
      *
+     * @param string $cause
+     * @param string $subject
+     *
      * @return string
      */
     protected function getErrorMessage(string $cause, string $subject)
@@ -281,7 +296,7 @@ abstract class Parser
     /**
      * Parse setter data into array of value, comment information.
      *
-     * @param string $data
+     * @param null|string $data
      *
      * @throws InvalidValueException
      *
