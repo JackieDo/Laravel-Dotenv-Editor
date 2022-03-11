@@ -9,7 +9,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: PHP-CS-Fixer Fix
+    - name: PHP-CS-Fixer fix
       uses: docker://oskarstark/php-cs-fixer-ga
       with:
         args: --config=.php-cs-fixer.dist.php
