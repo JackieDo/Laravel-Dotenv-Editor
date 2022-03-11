@@ -25,7 +25,7 @@ Laravel Dotenv Editor is the .env file editor (or files with same structure and 
 Laravel Dotenv Editor is compatible with Laravel 5.8 and later.
 
 # Important note for the version `2.x`
-After the release of `1.2.1`, version 1.x will be discontinued in favor of a new version (version `2.x`) with some changes to be compatible with the parsing method of `vlucas/dotenv` package. Version `2.x` has changed quite a lot compared to the previous version. If you have used earlier versions of this package, please re-read the instructions carefully.
+After the release of `1.2.1`, version 1.x will be discontinued in favor of a new version (version `2.x`) with some changes to be compatible with the parsing method of `vlucas/phpdotenv` package. Version `2.x` has changed quite a lot compared to the previous version. If you have used earlier versions of this package, please re-read the instructions carefully.
 
 # Documentation
 Look at one of the following topics to learn more about Laravel Dotenv Editor:
