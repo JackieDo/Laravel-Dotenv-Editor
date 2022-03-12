@@ -49,6 +49,9 @@ $rules = [
     'multiline_whitespace_before_semicolons' => [
         'strategy' => 'no_multi_line',
     ],
+    'php_unit_method_casing' => [
+        'case' => 'snake_case'
+    ],
     'phpdoc_add_missing_param_annotation' => [
         'only_untyped' => false
     ],
