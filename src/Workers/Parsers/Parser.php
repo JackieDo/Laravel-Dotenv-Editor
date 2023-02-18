@@ -298,9 +298,9 @@ abstract class Parser
      *
      * @param null|string $data
      *
-     * @throws InvalidValueException
-     *
      * @return array
+     *
+     * @throws InvalidValueException
      */
     abstract protected function parseSetterData($data);
 }

@@ -253,9 +253,9 @@ class DotenvWriter implements WriterInterface
      *
      * @param mixed $filePath
      *
-     * @throws UnableWriteToFileException
-     *
      * @return void
+     *
+     * @throws UnableWriteToFileException
      */
     protected function ensureFileIsWritable($filePath)
     {

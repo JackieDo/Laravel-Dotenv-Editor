@@ -27,9 +27,9 @@ class ParserV2 extends Parser implements ParserInterface
      *
      * @param null|string $data
      *
-     * @throws InvalidValueException
-     *
      * @return array
+     *
+     * @throws InvalidValueException
      */
     protected function parseSetterData($data)
     {
@@ -59,7 +59,7 @@ class ParserV2 extends Parser implements ParserInterface
                         return [$parseInfo[0] . $char, $parseInfo[1], self::UNQUOTED_STATE];
                     }
 
-                        return [$parseInfo[0] . $char, $parseInfo[1], self::UNQUOTED_STATE];
+                    return [$parseInfo[0] . $char, $parseInfo[1], self::UNQUOTED_STATE];
 
                 case self::UNQUOTED_STATE:
                     if ('#' === $char) {
@@ -74,14 +74,14 @@ class ParserV2 extends Parser implements ParserInterface
                         return [$parseInfo[0] . $char, $parseInfo[1], self::UNQUOTED_STATE];
                     }
 
-                        return [$parseInfo[0] . $char, $parseInfo[1], self::UNQUOTED_STATE];
+                    return [$parseInfo[0] . $char, $parseInfo[1], self::UNQUOTED_STATE];
 
                 case self::SINGLE_QUOTED_STATE:
                     if ('\'' === $char) {
                         return [$parseInfo[0], $parseInfo[1], self::WHITESPACE_STATE];
                     }
 
-                        return [$parseInfo[0] . $char, $parseInfo[1], self::SINGLE_QUOTED_STATE];
+                    return [$parseInfo[0] . $char, $parseInfo[1], self::SINGLE_QUOTED_STATE];
 
                 case self::DOUBLE_QUOTED_STATE:
                     if ('"' === $char) {
@@ -96,7 +96,7 @@ class ParserV2 extends Parser implements ParserInterface
                         return [$parseInfo[0] . $char, $parseInfo[1], self::DOUBLE_QUOTED_STATE];
                     }
 
-                        return [$parseInfo[0] . $char, $parseInfo[1], self::DOUBLE_QUOTED_STATE];
+                    return [$parseInfo[0] . $char, $parseInfo[1], self::DOUBLE_QUOTED_STATE];
 
                 case self::ESCAPE_SEQUENCE_STATE:
                     if ('"' === $char || '\\' === $char) {
@@ -111,7 +111,7 @@ class ParserV2 extends Parser implements ParserInterface
                         return [$parseInfo[0] . stripcslashes('\\' . $char), $parseInfo[1], self::DOUBLE_QUOTED_STATE];
                     }
 
-                        throw new InvalidValueException(self::getErrorMessage('an unexpected escape sequence', $data));
+                    throw new InvalidValueException(self::getErrorMessage('an unexpected escape sequence', $data));
 
                 case self::WHITESPACE_STATE:
                     if ('#' === $char) {
@@ -122,7 +122,7 @@ class ParserV2 extends Parser implements ParserInterface
                         throw new InvalidValueException(self::getErrorMessage('unexpected whitespace', $data));
                     }
 
-                        return [$parseInfo[0], $parseInfo[1], self::WHITESPACE_STATE];
+                    return [$parseInfo[0], $parseInfo[1], self::WHITESPACE_STATE];
 
                 case self::COMMENT_STATE:
                     return [$parseInfo[0], $parseInfo[1] . $char, self::COMMENT_STATE];

@@ -127,9 +127,9 @@ class DotenvReader implements ReaderInterface
     /**
      * Ensures the given file is readable.
      *
-     * @throws UnableReadFileException
-     *
      * @return void
+     *
+     * @throws UnableReadFileException
      */
     protected function ensureFileIsReadable()
     {

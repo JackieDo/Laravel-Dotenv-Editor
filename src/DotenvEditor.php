@@ -214,9 +214,9 @@ class DotenvEditor
      *
      * @param string $key The setter key name
      *
-     * @throws KeyNotFoundException
-     *
      * @return array
+     *
+     * @throws KeyNotFoundException
      */
     public function getKey(string $key)
     {
@@ -520,9 +520,9 @@ class DotenvEditor
     /**
      * Create one backup of loaded file.
      *
-     * @throws FileNotFoundException
-     *
      * @return DotenvEditor
+     *
+     * @throws FileNotFoundException
      */
     public function backup()
     {
@@ -611,10 +611,10 @@ class DotenvEditor
      *
      * @param null|string $filePath The file use to restore
      *
+     * @return DotenvEditor
+     *
      * @throws NoBackupAvailableException
      * @throws FileNotFoundException
-     *
-     * @return DotenvEditor
      */
     public function restore(?string $filePath = null)
     {
@@ -703,7 +703,7 @@ class DotenvEditor
             if (method_exists($this->app, 'environmentPath') && method_exists($this->app, 'environmentFile')) {
                 $filePath = Path::osStyle($this->app->environmentPath() . '/' . $this->app->environmentFile());
             } else {
-                $filePath = Path::osStyle($this->app->basePath() . '/' . '.env');
+                $filePath = Path::osStyle($this->app->basePath() . '/.env');
             }
         }
 

@@ -7,7 +7,7 @@ use Exception;
 /**
  * This is key not found exception class.
  */
-class KeyNotFoundException extends Exception
+class KeyNotFoundException extends \Exception
 {
     //
 }
