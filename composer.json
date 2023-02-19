@@ -10,9 +10,9 @@
         }
     ],
     "require": {
-        "illuminate/console": "^10.0|^9.0|^8.0|7.0|^6.0|^5.8",
-        "illuminate/contracts": "^10.0|^9.0|^8.0|7.0|^6.0|^5.8",
-        "illuminate/support": "^10.0|^9.0|^8.0|7.0|^6.0|^5.8",
+        "illuminate/console": "^10.0|^9.0|^8.0|^7.0|^6.0|^5.8",
+        "illuminate/contracts": "^10.0|^9.0|^8.0|^7.0|^6.0|^5.8",
+        "illuminate/support": "^10.0|^9.0|^8.0|^7.0|^6.0|^5.8",
         "jackiedo/path-helper": "^1.0"
     },
     "autoload": {
