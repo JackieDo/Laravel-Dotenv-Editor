@@ -114,40 +114,9 @@ class DotenvSetKeyCommand extends Command
         $this->restorePath = (is_string($restorePath)) ? base_path($restorePath) : null;
 
         $this->key       = $this->argument('key');
-        $this->value     = $this->stringToType($this->argument('value'));
+        $this->value     = $this->argument('value');
         $this->comment   = $this->stringToType($this->argument('comment'));
         $this->exportKey = $this->option('export-key');
-    }
-
-    /**
-     * Convert string to corresponding type.
-     *
-     * @param string $string
-     *
-     * @return mixed
-     */
-    protected function stringToType($string)
-    {
-        if (is_string($string)) {
-            switch (true) {
-                case 'null' == $string || 'NULL' == $string:
-                    $string = null;
-                    break;
-
-                case 'true' == $string || 'TRUE' == $string:
-                    $string = true;
-                    break;
-
-                case 'false' == $string || 'FALSE' == $string:
-                    $string = false;
-                    break;
-
-                default:
-                    break;
-            }
-        }
-
-        return $string;
     }
 
     /**
