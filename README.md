@@ -50,14 +50,14 @@ Look at one of the following topics to learn more about Laravel Dotenv Editor:
 You can install this package through [Composer](https://getcomposer.org). At the root of your application directory, run the following command (in any terminal client):
 
 ```shell
-$ composer require jackiedo/dotenv-editor
+composer require jackiedo/dotenv-editor
 ```
 
 ## Configuration
 To start using the package, you should publish the configuration file so that you can configure the package as needed. To do that, run the following command (in any terminal client) at the root of your application:
 
 ```shell
-$ php artisan vendor:publish --provider="Jackiedo\DotenvEditor\DotenvEditorServiceProvider" --tag="config"
+php artisan vendor:publish --provider="Jackiedo\DotenvEditor\DotenvEditorServiceProvider" --tag="config"
 ```
 
 This will create a `config/dotenv-editor.php` file in your app that you can modify to set your configuration. Also, make sure you check for changes to the original config file in this package between releases. Currently there are the following settings:
@@ -721,7 +721,7 @@ Please use each of the commands with the `--help` option to leanr more about the
 **Example:**
 
 ```shell
-$ php artisan dotenv:get-backups --help
+php artisan dotenv:get-backups --help
 ```
 
 ### Exceptions
